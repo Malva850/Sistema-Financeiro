@@ -1,0 +1,213 @@
+unit UPessoas;
+
+interface
+
+uses
+FireDAC.Comp.Client;
+
+type
+TPessoas = class
+  private
+    FNmPessoa: string;
+    Fnr_cpf_cnpj: string;
+    FNrCelular: string;
+    FCdPessoa: Integer;
+    procedure SetCdPessoa(const Value: Integer);
+    procedure SetNmPessoa(const Value: string);
+    procedure Setnr_cpf_cnpj(const Value: string);
+    procedure SetNrCelular(const Value: string);
+
+
+
+protected
+
+public
+constructor create;
+function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+function Alterar(var PMensagem:String): Boolean;
+function Apagar(var PMensagem:String): Boolean;
+function Localizar(PCodigo, PNome, PCPF, PNr_celular  : String; var Query : TFDQuery): boolean;
+
+published
+ property NmPessoa: string read FNmPessoa write SetNmPessoa;
+ property  NrCelular: string read FNrCelular write SetNrCelular;
+ property  CdPessoa: Integer read FCdPessoa write SetCdPessoa;
+ property nr_cpf_cnpj: string read Fnr_cpf_cnpj write Setnr_cpf_cnpj;
+
+
+end;
+implementation
+
+uses UDM, System.SysUtils;
+
+constructor TPessoas.create;
+begin
+  CdPessoa := 0;
+  NmPessoa := '' ;
+  NrCelular := '';
+end;
+
+{ TPessoas }
+
+procedure TPessoas.SetCdPessoa(const Value: Integer);
+begin
+  FCdPessoa := Value;
+end;
+
+procedure TPessoas.SetNmPessoa(const Value: string);
+begin
+  FNmPessoa := Value;
+end;
+
+procedure TPessoas.SetNrCelular(const Value: string);
+begin
+  FNrCelular := Value;
+end;
+
+procedure TPessoas.Setnr_cpf_cnpj(const Value: string);
+begin
+  Fnr_cpf_cnpj := Value;
+end;
+
+function TPessoas.Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCdPessoa := DM.GeraSequencial('GEN_PESSOAS') ;
+    PCodigo := FCdPessoa;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO PESSOAS (CD_PESSOA, NM_PESSOA, NR_CPF_CNPJ, NR_CELULAR)'+
+                       ' VALUES (:PCD_PESSOA, :PNM_PESSOA, :NR_CPF_CNPJ , :PNR_CELULAR)');
+    dm.QInsere.ParamByName('PCD_PESSOA').AsInteger := FCdPessoa ;
+    dm.QInsere.ParamByName('PNM_PESSOA').AsString  := FNmPessoa;
+    dm.QInsere.ParamByName('NR_CPF_CNPJ').AsString := Fnr_cpf_cnpj;
+    dm.QInsere.ParamByName('PNR_CELULAR').AsString := FNrCelular;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem := 'Inserido com sucesso!';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TPessoas.Alterar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE PESSOAS SET NM_PESSOA=:PNM_PESSOA, NR_CPF_CNPJ=:NR_CPF_CNPJ, NR_CELULAR=:PNR_CELULAR WHERE CD_PESSOA=:PCD_PESSOA');
+    dm.QUpdate.ParamByName('PNM_PESSOA').AsString  := FNmPessoa;
+    dm.QUpdate.ParamByName('PCD_PESSOA').AsInteger := FCdPessoa ;
+    dm.QUpdate.ParamByName('NR_CPF_CNPJ').AsString := Fnr_cpf_cnpj;
+    dm.QUpdate.ParamByName('PNR_CELULAR').AsString  := FNmPessoa;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem := 'Alterado com sucesso!';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TPessoas.Apagar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM PESSOAS  WHERE CD_PESSOA=:PCD_PESSOA');
+    dm.QUpdate.ParamByName('PCD_PESSOA').AsInteger := FCdPessoa ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+     PMensagem := 'Excluído com sucesso!';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TPessoas.Localizar(PCodigo, PNome, PCPF, PNr_celular : String; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from PESSOAS WHERE 1=1');
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CD_PESSOA=:PCD_Pessoa') ;
+    Query.ParamByName('PCD_Pessoa').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND NM_PESSOA LIKE :PNOME');
+    Query.ParamByName('PNOME').AsString := '%'+PNome+'%';
+  end;
+
+  if trim(PCPF)<> '' then
+  begin
+    Query.SQL.Add(' AND NR_CPF_CNPJ =:PCPF') ;
+    Query.ParamByName('PCPF').AsString := PCPF;
+  end;
+
+   if trim(PNr_celular)<> '' then
+  begin
+    Query.SQL.Add(' AND NR_CELULAR =:PNr_celular') ;
+    Query.ParamByName('PNr_celular').AsString := PNr_celular;
+  end;
+
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+end;
+
+end.

@@ -1,0 +1,297 @@
+unit UCadLancamento;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, UPadrao, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.DBCtrls, Vcl.Mask,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, UDM, ULancamentos,
+  Vcl.Buttons;
+
+type
+  TfrmCadLancamento = class(TfrmPadrao)
+    Label1: TLabel;
+    edtCodigo: TEdit;
+    edtDescricao: TEdit;
+    Label2: TLabel;
+    Label4: TLabel;
+    cbTipoPagamento: TDBLookupComboBox;
+    Label5: TLabel;
+    cbEmpresa: TDBLookupComboBox;
+    Label6: TLabel;
+    cbPessoa: TDBLookupComboBox;
+    cbSubCategoria: TDBLookupComboBox;
+    Label7: TLabel;
+    Label8: TLabel;
+    cbUsuario: TDBLookupComboBox;
+    GroupBox1: TGroupBox;
+    Label3: TLabel;
+    Label9: TLabel;
+    mskDataVencimento: TMaskEdit;
+    Label10: TLabel;
+    edtValorLancamento: TEdit;
+    Label11: TLabel;
+    mskDataPagamento: TMaskEdit;
+    Label12: TLabel;
+    edtValorPagamento: TEdit;
+    dsCbTipoPagamento: TDataSource;
+    QCbTipoPagamento: TFDQuery;
+    dsCbEmpresa: TDataSource;
+    QCbEmpresa: TFDQuery;
+    dsCbPessoa: TDataSource;
+    QCbPessoa: TFDQuery;
+    QCbSubCategoria: TFDQuery;
+    dsCbSubCategoria: TDataSource;
+    dsCbUsuario: TDataSource;
+    QCbUsuario: TFDQuery;
+    GroupBox2: TGroupBox;
+    Label13: TLabel;
+    Label14: TLabel;
+    mskDataInicialVencimentoPesq: TMaskEdit;
+    mskDataFinalVencimentoPesq: TMaskEdit;
+    Label15: TLabel;
+    GroupBox3: TGroupBox;
+    Label16: TLabel;
+    Label17: TLabel;
+    mskDataInicialPagamentoPesq: TMaskEdit;
+    mskDataFinalPagamentoPesq: TMaskEdit;
+    GroupBox4: TGroupBox;
+    Label18: TLabel;
+    btnLimparFiltros: TButton;
+    cbTipoPagamentoPesq: TDBLookupComboBox;
+    dsFiltro: TDataSource;
+    QSelect: TFDQuery;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ToolButton8Click(Sender: TObject);
+    procedure ToolButton6Click(Sender: TObject);
+    procedure btnLimparFiltrosClick(Sender: TObject);
+    procedure btnConfirmarClick(Sender: TObject);
+    procedure ToolButton5Click(Sender: TObject);
+    procedure ToolButton7Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure LimparCampos();
+    procedure PreencherObjeto(objeto: Lancamentos);
+    procedure LimparCamposPesq();
+  end;
+
+var
+  frmCadLancamento: TfrmCadLancamento;
+  codigoLancamentoCaixa: Integer;
+
+implementation
+
+{$R *.dfm}
+
+
+
+procedure TfrmCadLancamento.BitBtn1Click(Sender: TObject);
+var
+  lancamento: Lancamentos;
+  dtInicialVenc, dtFinalVenc, dtInicialPag, dtFinalPag, tipo: string;
+begin
+  inherited;
+  lancamento := Lancamentos.Create();
+
+  if(mskDataInicialVencimentoPesq.Text <> '  /  /  ') then
+    dtInicialVenc := mskDataInicialVencimentoPesq.Text;
+
+  if(mskDataFinalVencimentoPesq.Text <> '  /  /  ') then
+    dtFinalVenc := mskDataFinalVencimentoPesq.Text;
+
+  if(mskDataInicialPagamentoPesq.Text <> '  /  /  ') then
+    dtInicialPag := mskDataInicialPagamentoPesq.Text;
+
+  if(mskDataFinalPagamentoPesq.Text <> '  /  /  ') then
+    dtFinalPag := mskDataFinalPagamentoPesq.Text;
+
+  if(cbTipoPagamentoPesq.KeyValue <> Null) then
+    tipo := cbTipoPagamentoPesq.KeyValue;
+  lancamento.Localizar(dtInicialVenc, dtFinalVenc, dtInicialPag, dtFinalPag, tipo, QSelect);
+
+  lancamento.Free();
+end;
+
+procedure TfrmCadLancamento.btnConfirmarClick(Sender: TObject);
+begin
+  if(QSelect.IsEmpty) then
+  begin
+    ExibirMensagem('Nenhum registro selecionado!', 'Erro!', true);
+    Abort;
+  end;
+
+  inherited;
+  edtCodigo.Text := QSelect.FieldByName('CD_LANCAMENTO').AsString;
+  cbEmpresa.KeyValue := QSelect.FieldByName('CD_EMPRESA').AsInteger;
+  cbSubCategoria.KeyValue := QSelect.FieldByName('CD_SUBCATEGORIA').AsInteger;
+  cbPessoa.KeyValue := QSelect.FieldByName('CD_PESSOA').AsInteger;
+  cbTipoPagamento.KeyValue := QSelect.FieldByName('CD_TIPO_PAGAMENTO').AsInteger;
+  cbUsuario.KeyValue := QSelect.FieldByName('CD_USUARIO').AsInteger;
+  edtDescricao.Text := QSelect.FieldByName('DESCRICAO').AsString;
+  mskDataPagamento.Text := QSelect.FieldByName('DT_PAGAMENTO').AsString;
+  mskDataVencimento.Text := QSelect.FieldByName('DT_VENCIMENTO').AsString;
+  edtValorLancamento.Text := QSelect.FieldByName('VL_LANCAMENTO').AsString;
+  edtValorPagamento.Text := QSelect.FieldByName('VL_PAGAMENTO').AsString;
+  codigoLancamentoCaixa := QSelect.FieldByName('CD_LANCAMENTO_CAIXA').AsInteger;
+end;
+
+procedure TfrmCadLancamento.btnLimparFiltrosClick(Sender: TObject);
+begin
+  inherited;
+  QSelect.Close();
+  LimparCamposPesq();
+end;
+
+procedure TfrmCadLancamento.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  inherited;
+  QCbEmpresa.Close();
+  QCbPessoa.Close();
+  QCbSubCategoria.Close();
+  QCbTipoPagamento.Close();
+  QCbUsuario.Close();
+end;
+
+procedure TfrmCadLancamento.FormCreate(Sender: TObject);
+begin
+  inherited;
+  QCbEmpresa.Open();
+  QCbPessoa.Open();
+  QCbSubCategoria.Open();
+  QCbTipoPagamento.Open();
+  QCbUsuario.Open();
+end;
+
+procedure TfrmCadLancamento.LimparCampos;
+begin
+  edtCodigo.Clear();
+  edtDescricao.Clear();
+  mskDataPagamento.Clear();
+  edtValorLancamento.Clear();
+  mskDataVencimento.Clear();
+  edtValorPagamento.Clear();
+  cbTipoPagamento.KeyValue := Null;
+  cbEmpresa.KeyValue := Null;
+  cbSubCategoria.KeyValue := Null;
+  cbPessoa.KeyValue := Null;
+  cbUsuario.KeyValue := Null;
+end;
+
+procedure TfrmCadLancamento.LimparCamposPesq;
+begin
+  mskDataInicialVencimentoPesq.Clear();
+  mskDataFinalVencimentoPesq.Clear();
+  mskDataInicialPagamentoPesq.Clear();
+  mskDataFinalPagamentoPesq.Clear();
+  cbTipoPagamentoPesq.KeyValue := Null;
+end;
+
+procedure TfrmCadLancamento.PreencherObjeto(objeto: Lancamentos);
+begin
+  objeto.CdEmpresa :=  cbEmpresa.KeyValue;
+  objeto.CdSubcategoria := cbSubCategoria.KeyValue;
+  objeto.CdPessoa := cbPessoa.KeyValue;
+  objeto.CdTipoPagamento := cbTipoPagamento.KeyValue;
+  objeto.Descricao := edtDescricao.Text;
+  objeto.DtSistema := Now;
+  objeto.CdUsuario := cbUsuario.KeyValue;
+  objeto.DtVencimento := StrToDateTime(mskDataVencimento.Text);
+  objeto.VlLancamento := StrToFloat(edtValorLancamento.Text);
+  objeto.DtPagamento := StrToDateTime(mskDataPagamento.Text);
+  objeto.VlPagamento := StrToFloat(edtValorPagamento.Text);
+  objeto.CdLancamentoCaixa := 1;
+end;
+
+procedure TfrmCadLancamento.ToolButton5Click(Sender: TObject);
+begin
+  inherited;
+  LimparCampos();
+end;
+
+procedure TfrmCadLancamento.ToolButton6Click(Sender: TObject);
+var
+  lancamento: Lancamentos;
+  codigo: Integer;
+  mensagem: string;
+begin
+  inherited;
+  lancamento := Lancamentos.Create();
+  PreencherObjeto(lancamento);
+
+  if(edtCodigo.Text = '') then
+  begin
+    if(lancamento.Inserir(codigo, mensagem) = true) then
+    begin
+      edtCodigo.Text := IntToStr(codigo);
+      ExibirMensagem('Lançamento adicionado com sucesso!', 'Sucesso!', false);
+    end
+    else
+    begin
+      ExibirMensagem(mensagem, 'Erro!', true);
+    end;
+  end
+  else
+  begin
+    lancamento.CdLancamento := StrToInt(edtCodigo.Text);
+    lancamento.CdLancamentoCaixa := codigoLancamentoCaixa;
+    if(lancamento.Alterar(mensagem) = true) then
+    begin
+       ExibirMensagem('Empresa alterada com sucesso!', 'Sucesso!', false);
+    end
+    else
+    begin
+       ExibirMensagem(mensagem, 'Erro!', true);
+    end;
+  end;
+
+  lancamento.Free();
+
+  QSelect.Close();
+end;
+
+procedure TfrmCadLancamento.ToolButton7Click(Sender: TObject);
+var
+  lancamento: Lancamentos;
+  mensagem: string;
+begin
+  inherited;
+  lancamento := Lancamentos.Create();
+
+  if(edtCodigo.Text = '') then
+  begin
+    ExibirMensagem('Nenhum lançamento posicionado!', 'Erro', true);
+    Abort;
+  end;
+  
+  if(Application.MessageBox('Deseja excluir o lançamento?', 'Questionamento', MB_ICONASTERISK + MB_YESNO) = IDYES) then
+  begin
+    lancamento.CdLancamento := StrToInt(edtCodigo.Text);
+
+    if(lancamento.Deletar(mensagem) = True) then
+    begin
+      ExibirMensagem('Lançamento apagado com sucesso!', 'Sucesso!', false);
+      LimparCampos();
+    end
+    else
+    begin
+      ExibirMensagem(mensagem, 'Erro', true);
+    end;
+  end;
+
+end;
+
+procedure TfrmCadLancamento.ToolButton8Click(Sender: TObject);
+begin
+  inherited;
+  PageControl1.ActivePage := TabSheet2;
+end;
+
+end.

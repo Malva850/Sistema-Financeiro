@@ -1,0 +1,53 @@
+object frmProcAberturasCaixas: TfrmProcAberturasCaixas
+  Left = 0
+  Top = 0
+  BorderStyle = bsSingle
+  Caption = 'Processo [ABERTURA DE CAIXAS]'
+  ClientHeight = 397
+  ClientWidth = 702
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Visible = True
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 24
+    Top = 20
+    Width = 27
+    Height = 13
+    Caption = 'Caixa'
+  end
+  object BitBtn1: TBitBtn
+    Left = 262
+    Top = 26
+    Width = 191
+    Height = 39
+    Caption = 'Abrir Caixa'
+    TabOrder = 0
+  end
+  object DBLookupComboBox1: TDBLookupComboBox
+    Left = 24
+    Top = 39
+    Width = 191
+    Height = 21
+    TabOrder = 1
+  end
+  object DBGrid1: TDBGrid
+    Left = 22
+    Top = 76
+    Width = 647
+    Height = 289
+    TabOrder = 2
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+end

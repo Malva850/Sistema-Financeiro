@@ -1,0 +1,181 @@
+unit UTipoPagamentos;
+
+interface
+
+uses FireDAC.Comp.Client;
+
+type
+  TTipoPagamentos = class
+  private
+  FCDPagamentos : Integer;
+  FNMPagamentos : String;
+    procedure SetCDPagamentos(const Value: Integer);
+    procedure SetNMPagamentos(const Value: String);
+
+  public
+    constructor create;
+    function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+    function Alterar(var PMensagem:String): Boolean;
+    function Apagar(var PMensagem:String): Boolean;
+    function Localizar(PCodigo, PNome : String; var Query : TFDQuery): boolean;
+
+
+  published
+    property CDPagamento : Integer  read FCDPagamentos write SetCDPagamentos;
+    property NMPagamento : String  read FNMPagamentos write SetNMPagamentos;
+
+  end;
+
+implementation
+
+  uses UDM, System.SysUtils;
+
+constructor TTipoPagamentos.create;
+begin
+  CDPagamento := 0;
+  NMPagamento := '' ;
+end;
+
+procedure TTipoPagamentos.SetCDPagamentos(const Value: Integer);
+begin
+  FCDPagamentos := Value;
+end;
+
+procedure TTipoPagamentos.SetNMPagamentos(const Value: String);
+begin
+  FNMPagamentos := Value;
+end;
+
+function TTipoPagamentos.Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+
+begin
+
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCDPagamentos := DM.GeraSequencial('GEN_TIPOS_PAGAMENTOS') ;
+    PCodigo := FCDPagamentos;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO TIPOS_PAGAMENTOS (CD_TIPO_PAGAMENTO, NM_TIPO_PAGAMENTO)'+
+                       ' VALUES (:PCD_TIPO_PAGAMENTO, :PNM_TIPO_PAGAMENTO)');
+    dm.QInsere.ParamByName('PCD_TIPO_Pagamento').AsInteger := FCDPagamentos ;
+    dm.QInsere.ParamByName('PNM_TIPO_Pagamento').AsString  := FNMPagamentos;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem := 'Inserido com sucesso!';
+    Result := true;
+
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TTipoPagamentos.Alterar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE TIPOS_PAGAMENTOS SET NM_TIPO_PAGAMENTO=:PNM_TIPO_PAGAMENTO WHERE CD_TIPO_PAGAMENTO=:PCD_TIPO_PAGAMENTO');
+    dm.QUpdate.ParamByName('PNM_TIPO_PAGAMENTO').AsString  := FNMPagamentos;
+    dm.QUpdate.ParamByName('PCD_TIPO_PAGAMENTO').AsInteger := FCDPagamentos ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem := 'Alterado com sucesso!';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TTipoPagamentos.Apagar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM TIPOS_PAGAMENTOS  WHERE CD_TIPO_PAGAMENTO=:PCD_TIPO_PAGAMENTO');
+    dm.QUpdate.ParamByName('PCD_TIPO_PAGAMENTO').AsInteger := FCDPagamentos ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem := 'Excluído com sucesso!';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TTipoPagamentos.Localizar(PCodigo, PNome : String; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from TIPOS_PAGAMENTOS WHERE 1=1');
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CD_TIPO_PAGAMENTO=:PCD_TIPO_PAGAMENTO') ;
+    Query.ParamByName('PCD_TIPO_PAGAMENTO').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND NM_TIPO_PAGAMENTO LIKE :PNOME');
+    Query.ParamByName('PNOME').AsString := '%'+PNome+'%';
+  end;
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+
+
+end;
+
+
+
+
+
+end.

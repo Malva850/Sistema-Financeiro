@@ -1,0 +1,244 @@
+unit UCadCaixas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, UPadrao, Data.DB, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin, Vcl.DBCtrls, UCaixas, Vcl.Buttons;
+
+type
+  TfrmCadCaixas = class(TfrmPadrao)
+    QUsuariosAux: TFDQuery;
+    DsUsuariosAux: TDataSource;
+    Label1: TLabel;
+    Label2: TLabel;
+    edtPesqCodigo: TEdit;
+    edtPesqNome: TEdit;
+    Label3: TLabel;
+    DBLookupComboBox1: TDBLookupComboBox;
+    DsDados: TDataSource;
+    QDados: TFDQuery;
+    QDadosCD_CAIXA: TIntegerField;
+    QDadosNM_CAIXA: TStringField;
+    QDadosCD_USUARIO: TIntegerField;
+    QDadosNM_USUARIO: TStringField;
+    procedure ToolButton4Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure ToolButton7Click(Sender: TObject);
+    procedure DBGrid1DblClick(Sender: TObject);
+    procedure TabSheet2Show(Sender: TObject);
+    procedure ToolButton6Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+  private
+    procedure LimparCampos;
+    { Private declarations }
+  public
+    Caixa : TCaixas;
+    { Public declarations }
+  end;
+
+var
+  frmCadCaixas: TfrmCadCaixas;
+
+implementation
+
+{$R *.dfm}
+
+uses UDM;
+
+procedure TfrmCadCaixas.LimparCampos;
+begin
+  edtPesqCodigo.Clear;
+  edtPesqNome.Clear;
+  DBLookupComboBox1.KeyValue := -1;
+  QUsuariosAux.Close;
+  QUsuariosAux.Open;
+end;
+
+procedure TfrmCadCaixas.DBGrid1DblClick(Sender: TObject);
+begin
+  inherited;
+  edtPesqCodigo.Text := QDadosCD_CAIXA.AsString;
+  edtPesqNome.Text := QDadosNM_CAIXA.AsString;
+  DBLookupComboBox1.KeyValue := QDadosCD_USUARIO.AsInteger;
+
+  PageControl1.ActivePage := TabSheet1;
+end;
+
+procedure TfrmCadCaixas.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  inherited;
+  FreeAndNil(Caixa);
+end;
+
+procedure TfrmCadCaixas.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Caixa := TCaixas.create;
+end;
+
+procedure TfrmCadCaixas.TabSheet2Show(Sender: TObject);
+begin
+  inherited;
+  QDados.Refresh;
+end;
+
+procedure TfrmCadCaixas.ToolButton1Click(Sender: TObject);
+begin
+  inherited;
+  LimparCampos;
+end;
+
+procedure TfrmCadCaixas.ToolButton2Click(Sender: TObject);
+begin
+  inherited;
+   if Trim(edtPesqNome.Text) = '' then
+  begin
+    showMessage('Nome do caixa deve ser preenchido!');
+    Exit;
+  end;
+
+  if DBLookupComboBox1.KeyValue = Null then
+  begin
+    showMessage('Usuário do caixa deve ser preenchido!');
+    Exit;
+  end;
+
+
+  if edtPesqCodigo.Text = '' then
+  begin
+    Caixa.CdCaixa := 0;
+    Caixa.NmCaixa := edtPesqNome.Text;
+    Caixa.CdUsuario := DBLookupComboBox1.KeyValue;
+
+    if Caixa.Inserir(0, '') = true then
+    begin
+      showMessage('Caixa cadastrado!');
+      LimparCampos;
+    end
+    else
+    begin
+      showMessage('Erro ao cadastrar caixa!');
+    end;
+  end
+  else
+  begin
+    Caixa.CdCaixa := StrToInt(edtPesqCodigo.Text);
+    Caixa.NmCaixa := edtPesqNome.Text;
+    Caixa.CdUsuario := DBLookupComboBox1.KeyValue;
+
+    if Caixa.Alterar('') = true then
+    begin
+      showMessage('Caixa alterado com sucesso!');
+      LimparCampos;
+    end
+    else
+    begin
+      showMessage('Erro ao alterar caixa!');
+    end;
+  end;
+end;
+
+procedure TfrmCadCaixas.ToolButton3Click(Sender: TObject);
+begin
+  inherited;
+if messageDlg('Deseja apagar o registro?', mtWarning, mbYesNo, 0) = mrYes then
+  begin
+    Caixa.CdCaixa := StrToInt(edtPesqCodigo.Text);
+    Caixa.NmCaixa := '';
+    Caixa.CdUsuario := 0;
+
+    if Caixa.Apagar('') = true then
+    begin
+      showMessage('Registro apagado com sucesso!');
+      LimparCampos;
+    end
+    else
+    begin
+      showMessage('Erro ao apagar registro!');
+    end;
+  end;
+end;
+
+procedure TfrmCadCaixas.ToolButton4Click(Sender: TObject);
+var
+  TestaValor : Integer;
+begin
+  inherited;
+
+  if DBLookupComboBox1.KeyValue = null then
+  begin
+    TestaValor := 0;
+  end
+  else
+  begin
+    TestaValor := DBLookupComboBox1.KeyValue;
+  end;
+
+
+  if Caixa.Localizar(edtPesqCodigo.Text, edtPesqNome.Text, TestaValor, QDados) = true then
+  begin
+    PageControl1.ActivePage := TabSheet2;
+  end
+  else
+  begin
+    showMessage('Não foram encontrados registros para os parametros informados!');
+  end;
+
+end;
+
+procedure TfrmCadCaixas.ToolButton6Click(Sender: TObject);
+begin
+  inherited;
+  if messageDlg('Deseja apagar o registro?', mtWarning, mbYesNo, 0) = mrYes then
+  begin
+    Caixa.CdCaixa := StrToInt(edtPesqCodigo.Text);
+    Caixa.NmCaixa := '';
+    Caixa.CdUsuario := 0;
+
+    if Caixa.Apagar('') = true then
+    begin
+      showMessage('Registro apagado com sucesso!');
+      LimparCampos;
+    end
+    else
+    begin
+      showMessage('Erro ao apagar registro!');
+    end;
+  end;
+end;
+
+procedure TfrmCadCaixas.ToolButton7Click(Sender: TObject);
+var
+  TestaValor : Integer;
+begin
+  inherited;
+
+  if DBLookupComboBox1.KeyValue = null then
+  begin
+    TestaValor := 0;
+  end
+  else
+  begin
+    TestaValor := DBLookupComboBox1.KeyValue;
+  end;
+
+
+  if Caixa.Localizar(edtPesqCodigo.Text, edtPesqNome.Text, TestaValor, QDados) = true then
+  begin
+    PageControl1.ActivePage := TabSheet2;
+  end
+  else
+  begin
+    showMessage('Não foram encontrados registros para os parametros informados!');
+  end;
+end;
+
+end.

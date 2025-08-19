@@ -1,0 +1,492 @@
+inherited frmCadLancamento: TfrmCadLancamento
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Lan'#231'amento'
+  ClientHeight = 598
+  ClientWidth = 1139
+  Position = poScreenCenter
+  ExplicitWidth = 1145
+  ExplicitHeight = 627
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label13: TLabel [0]
+    Left = 80
+    Top = 56
+    Width = 37
+    Height = 13
+    Caption = 'Label13'
+  end
+  inherited PageControl1: TPageControl
+    Width = 1139
+    Height = 598
+    ExplicitWidth = 1139
+    ExplicitHeight = 598
+    inherited TabSheet1: TTabSheet
+      ExplicitLeft = 92
+      ExplicitTop = 134
+      ExplicitWidth = 1131
+      ExplicitHeight = 570
+      object Label1: TLabel [0]
+        Left = 18
+        Top = 56
+        Width = 33
+        Height = 13
+        Caption = 'C'#243'digo'
+      end
+      object Label2: TLabel [1]
+        Left = 18
+        Top = 96
+        Width = 46
+        Height = 13
+        Caption = 'Descri'#231#227'o'
+      end
+      object Label4: TLabel [2]
+        Left = 303
+        Top = 96
+        Width = 77
+        Height = 13
+        Caption = 'Tipo Pagamento'
+      end
+      object Label5: TLabel [3]
+        Left = 502
+        Top = 96
+        Width = 41
+        Height = 13
+        Caption = 'Empresa'
+      end
+      object Label6: TLabel [4]
+        Left = 18
+        Top = 144
+        Width = 34
+        Height = 13
+        Caption = 'Pessoa'
+      end
+      object Label7: TLabel [5]
+        Left = 250
+        Top = 144
+        Width = 68
+        Height = 13
+        Caption = 'Sub Categoria'
+      end
+      object Label8: TLabel [6]
+        Left = 479
+        Top = 144
+        Width = 36
+        Height = 13
+        Caption = 'Usu'#225'rio'
+      end
+      inherited ToolBar1: TToolBar
+        Width = 1131
+        ExplicitWidth = 1131
+        inherited ToolButton1: TToolButton
+          OnClick = ToolButton8Click
+        end
+        inherited ToolButton2: TToolButton
+          OnClick = ToolButton2Click
+        end
+        inherited ToolButton3: TToolButton
+          OnClick = ToolButton3Click
+        end
+      end
+      object edtCodigo: TEdit
+        Left = 18
+        Top = 75
+        Width = 121
+        Height = 21
+        Enabled = False
+        TabOrder = 1
+      end
+      object edtDescricao: TEdit
+        Left = 18
+        Top = 115
+        Width = 279
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 2
+      end
+      object cbTipoPagamento: TDBLookupComboBox
+        Left = 303
+        Top = 115
+        Width = 193
+        Height = 21
+        KeyField = 'CD_TIPO_PAGAMENTO'
+        ListField = 'NM_TIPO_PAGAMENTO'
+        ListSource = dsCbTipoPagamento
+        TabOrder = 3
+      end
+      object cbEmpresa: TDBLookupComboBox
+        Left = 502
+        Top = 115
+        Width = 187
+        Height = 21
+        KeyField = 'CD_EMPRESA'
+        ListField = 'NM_EMPRESA'
+        ListSource = dsCbEmpresa
+        TabOrder = 4
+      end
+      object cbPessoa: TDBLookupComboBox
+        Left = 18
+        Top = 163
+        Width = 226
+        Height = 21
+        KeyField = 'CD_PESSOA'
+        ListField = 'NM_PESSOA'
+        ListSource = dsCbPessoa
+        TabOrder = 5
+      end
+      object cbSubCategoria: TDBLookupComboBox
+        Left = 250
+        Top = 163
+        Width = 223
+        Height = 21
+        KeyField = 'CD_SUBCATEGORIA'
+        ListField = 'NM_SUBCATEGORIA'
+        ListSource = dsCbSubCategoria
+        TabOrder = 6
+      end
+      object cbUsuario: TDBLookupComboBox
+        Left = 479
+        Top = 163
+        Width = 210
+        Height = 21
+        KeyField = 'CD_USUARIO'
+        ListField = 'NM_USUARIO'
+        ListSource = dsCbUsuario
+        TabOrder = 7
+      end
+      object GroupBox1: TGroupBox
+        Left = 18
+        Top = 190
+        Width = 671
+        Height = 83
+        Caption = 'Datas e Valores'
+        TabOrder = 8
+        object Label9: TLabel
+          Left = 15
+          Top = 24
+          Width = 55
+          Height = 13
+          Caption = 'Vencimento'
+        end
+        object Label10: TLabel
+          Left = 141
+          Top = 24
+          Width = 85
+          Height = 13
+          Caption = 'Valor Lan'#231'amento'
+        end
+        object Label11: TLabel
+          Left = 268
+          Top = 24
+          Width = 54
+          Height = 13
+          Caption = 'Pagamento'
+        end
+        object Label12: TLabel
+          Left = 394
+          Top = 24
+          Width = 81
+          Height = 13
+          Caption = 'Valor Pagamento'
+        end
+        object mskDataVencimento: TMaskEdit
+          Left = 15
+          Top = 43
+          Width = 120
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 0
+          Text = '  /  /  '
+        end
+        object edtValorLancamento: TEdit
+          Left = 141
+          Top = 43
+          Width = 121
+          Height = 21
+          TabOrder = 1
+        end
+        object mskDataPagamento: TMaskEdit
+          Left = 268
+          Top = 43
+          Width = 120
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 2
+          Text = '  /  /  '
+        end
+        object edtValorPagamento: TEdit
+          Left = 394
+          Top = 43
+          Width = 121
+          Height = 21
+          TabOrder = 3
+        end
+      end
+    end
+    inherited TabSheet2: TTabSheet
+      ExplicitLeft = 4
+      ExplicitTop = 24
+      ExplicitWidth = 1131
+      ExplicitHeight = 570
+      inherited DBGrid1: TDBGrid
+        Left = 33
+        Top = 95
+        Height = 186
+        DataSource = dsFiltro
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'DESCRICAO'
+            Title.Caption = 'Descri'#231#227'o'
+            Width = 170
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'DT_VENCIMENTO'
+            Title.Caption = 'Data Venc.'
+            Width = 67
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'VL_LANCAMENTO'
+            Title.Caption = 'Vr. Lan'#231
+            Width = 59
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'DT_PAGAMENTO'
+            Title.Caption = 'Data Pgto.'
+            Width = 70
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'VL_PAGAMENTO'
+            Title.Caption = 'Vr. Pgto.'
+            Width = 58
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_TIPO_PAGAMENTO'
+            Title.Caption = 'Tipo Pagamento'
+            Width = 113
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_EMPRESA'
+            Title.Caption = 'Empresa'
+            Width = 99
+            Visible = True
+          end>
+      end
+      inherited BitBtn1: TBitBtn
+        Left = 642
+        Top = 22
+        OnClick = BitBtn1Click
+        ExplicitLeft = 642
+        ExplicitTop = 22
+      end
+      object GroupBox2: TGroupBox
+        Left = 24
+        Top = 3
+        Width = 185
+        Height = 86
+        Caption = 'Data Vencimento'
+        TabOrder = 3
+        object Label14: TLabel
+          Left = 19
+          Top = 26
+          Width = 27
+          Height = 13
+          Caption = 'Inicial'
+        end
+        object Label15: TLabel
+          Left = 95
+          Top = 26
+          Width = 22
+          Height = 13
+          Caption = 'Final'
+        end
+        object mskDataInicialVencimentoPesq: TMaskEdit
+          Left = 21
+          Top = 45
+          Width = 64
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 0
+          Text = '  /  /  '
+        end
+        object mskDataFinalVencimentoPesq: TMaskEdit
+          Left = 95
+          Top = 45
+          Width = 68
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 1
+          Text = '  /  /  '
+        end
+      end
+      object GroupBox3: TGroupBox
+        Left = 215
+        Top = 3
+        Width = 185
+        Height = 86
+        Caption = 'Data Pagamento'
+        TabOrder = 4
+        object Label16: TLabel
+          Left = 19
+          Top = 26
+          Width = 27
+          Height = 13
+          Caption = 'Inicial'
+        end
+        object Label17: TLabel
+          Left = 93
+          Top = 26
+          Width = 22
+          Height = 13
+          Caption = 'Final'
+        end
+        object mskDataInicialPagamentoPesq: TMaskEdit
+          Left = 19
+          Top = 45
+          Width = 68
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 0
+          Text = '  /  /  '
+        end
+        object mskDataFinalPagamentoPesq: TMaskEdit
+          Left = 93
+          Top = 45
+          Width = 68
+          Height = 21
+          EditMask = '!99/99/00;1;_'
+          MaxLength = 8
+          TabOrder = 1
+          Text = '  /  /  '
+        end
+      end
+      object GroupBox4: TGroupBox
+        Left = 406
+        Top = 3
+        Width = 185
+        Height = 86
+        Caption = 'Filtro'
+        TabOrder = 5
+        object Label18: TLabel
+          Left = 11
+          Top = 26
+          Width = 77
+          Height = 13
+          Caption = 'Tipo Pagamento'
+        end
+        object cbTipoPagamentoPesq: TDBLookupComboBox
+          Left = 13
+          Top = 45
+          Width = 161
+          Height = 21
+          KeyField = 'CD_TIPO_PAGAMENTO'
+          ListField = 'NM_TIPO_PAGAMENTO'
+          ListSource = dsCbTipoPagamento
+          TabOrder = 0
+        end
+      end
+      object btnLimparFiltros: TButton
+        Left = 654
+        Top = 62
+        Width = 75
+        Height = 25
+        Caption = 'Limpar'
+        TabOrder = 6
+        OnClick = btnLimparFiltrosClick
+      end
+    end
+  end
+  object dsCbTipoPagamento: TDataSource
+    DataSet = QCbTipoPagamento
+    Left = 92
+    Top = 312
+  end
+  object QCbTipoPagamento: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM TIPOS_PAGAMENTOS ORDER BY NM_TIPO_PAGAMENTO')
+    Left = 92
+    Top = 360
+  end
+  object dsCbEmpresa: TDataSource
+    DataSet = QCbEmpresa
+    Left = 188
+    Top = 312
+  end
+  object QCbEmpresa: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM EMPRESAS ORDER BY NM_EMPRESA')
+    Left = 188
+    Top = 360
+  end
+  object dsCbPessoa: TDataSource
+    DataSet = QCbPessoa
+    Left = 260
+    Top = 312
+  end
+  object QCbPessoa: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM PESSOAS ORDER BY NM_PESSOA')
+    Left = 260
+    Top = 360
+  end
+  object QCbSubCategoria: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM SUBCATEGORIAS ORDER BY NM_SUBCATEGORIA')
+    Left = 348
+    Top = 360
+  end
+  object dsCbSubCategoria: TDataSource
+    DataSet = QCbSubCategoria
+    Left = 348
+    Top = 312
+  end
+  object dsCbUsuario: TDataSource
+    DataSet = QCbUsuario
+    Left = 436
+    Top = 312
+  end
+  object QCbUsuario: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM USUARIOS ORDER BY NM_USUARIO')
+    Left = 436
+    Top = 360
+  end
+  object dsFiltro: TDataSource
+    DataSet = QSelect
+    Left = 568
+    Top = 360
+  end
+  object QSelect: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM LANCAMENTOS AS LANC'
+      'INNER JOIN EMPRESAS AS EMP ON LANC.CD_EMPRESA = EMP.CD_EMPRESA'
+      
+        'INNER JOIN TIPOS_PAGAMENTOS AS PAG ON LANC.CD_TIPO_PAGAMENTO = P' +
+        'AG.CD_TIPO_PAGAMENTO')
+    Left = 504
+    Top = 360
+  end
+end

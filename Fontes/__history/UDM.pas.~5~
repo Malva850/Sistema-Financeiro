@@ -1,0 +1,57 @@
+unit UDM;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Phys.FB, FireDAC.Phys.FBDef;
+
+type
+  TDM = class(TDataModule)
+    DBFinanceiro: TFDConnection;
+    QInsere: TFDQuery;
+    QGenerator: TFDQuery;
+    QSelect: TFDQuery;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    function GeraSequencial(PGenerator : String): integer;
+  end;
+
+var
+  DM: TDM;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+
+
+{ TDM }
+
+function TDM.GeraSequencial(PGenerator: String): integer;
+begin
+  QGenerator.Close;
+  QGenerator.SQL.Clear;
+  QGenerator.SQL.Add(' select gen_id('+PGenerator+',1) as CODIGO from rdb$database');
+  QGenerator.Open();
+  if not QGenerator.IsEmpty then
+  begin
+     Result :=   QGenerator.FieldByName('CODIGO').AsInteger;
+  end
+  else
+  begin
+    Result := 0;
+  end;
+  QGenerator.Close;
+
+end;
+
+
+end.

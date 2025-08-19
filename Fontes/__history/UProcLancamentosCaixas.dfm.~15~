@@ -1,0 +1,269 @@
+object frmProcLancamentosCaixas: TfrmProcLancamentosCaixas
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Lan'#231'amentos Caixas'
+  ClientHeight = 671
+  ClientWidth = 989
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  Visible = True
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 16
+    Top = 10
+    Width = 27
+    Height = 13
+    Caption = 'Caixa'
+  end
+  object Label2: TLabel
+    Left = 96
+    Top = 404
+    Width = 43
+    Height = 19
+    Caption = 'Valor'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object lblAbertura: TLabel
+    Left = 22
+    Top = 82
+    Width = 66
+    Height = 18
+    Caption = 'Abertura'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object lblHora: TLabel
+    Left = 22
+    Top = 114
+    Width = 55
+    Height = 18
+    Alignment = taCenter
+    Caption = 'lblHora'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label7: TLabel
+    Left = 24
+    Top = 210
+    Width = 46
+    Height = 13
+    Caption = 'Descri'#231#227'o'
+  end
+  object Label3: TLabel
+    Left = 24
+    Top = 156
+    Width = 68
+    Height = 13
+    Caption = 'Sub Categoria'
+  end
+  object DbLookCaixas: TDBLookupComboBox
+    Left = 16
+    Top = 29
+    Width = 482
+    Height = 31
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    KeyField = 'CD_ABERTURA_CAIXA'
+    ListField = 'NM_CAIXA'
+    ListSource = DsAberturas
+    ParentFont = False
+    TabOrder = 0
+    OnClick = DbLookCaixasClick
+  end
+  object edtValor: TEdit
+    Left = 96
+    Top = 429
+    Width = 287
+    Height = 37
+    Alignment = taRightJustify
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -24
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 1
+  end
+  object rdgTipo: TRadioGroup
+    Left = 24
+    Top = 324
+    Width = 482
+    Height = 65
+    Caption = 'Tipo de Lan'#231'amento'
+    Columns = 2
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ItemIndex = 0
+    Items.Strings = (
+      'D'#233'bito'
+      'Cr'#233'dito')
+    ParentFont = False
+    TabOrder = 2
+  end
+  object BitBtn1: TBitBtn
+    Left = 134
+    Top = 506
+    Width = 211
+    Height = 61
+    Caption = 'Efetuar Lan'#231'amento'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 3
+    OnClick = BitBtn1Click
+  end
+  object cbSubCategoria: TDBLookupComboBox
+    Left = 22
+    Top = 173
+    Width = 482
+    Height = 27
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    KeyField = 'CD_SUBCATEGORIA'
+    ListField = 'NM_SUBCATEGORIA'
+    ListSource = dsCbSubCategoria
+    ParentFont = False
+    TabOrder = 4
+  end
+  object memDescricao: TMemo
+    Left = 18
+    Top = 236
+    Width = 453
+    Height = 63
+    TabOrder = 5
+  end
+  object rchLista: TRichEdit
+    Left = 550
+    Top = 29
+    Width = 401
+    Height = 559
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 6
+    Zoom = 100
+  end
+  object btnEstornar: TBitBtn
+    Left = 870
+    Top = 606
+    Width = 75
+    Height = 25
+    Caption = 'Estornar'
+    TabOrder = 7
+    OnClick = btnEstornarClick
+  end
+  object QAberturas: TFDQuery
+    AfterScroll = QAberturasAfterScroll
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'select ac.cd_abertura_caixa,'
+      '        ac.cd_caixa,'
+      '        ac.dt_abertura,'
+      '        ac.hr_abertura,'
+      '        c.nm_caixa'
+      '    from aberturas_caixas ac, caixas c'
+      '    where ac.cd_caixa=c.cd_caixa'
+      '    and ac.dt_fechamento is null'
+      '    and ac.cd_usuario=:cdUsuario')
+    Left = 508
+    Top = 94
+    ParamData = <
+      item
+        Name = 'CDUSUARIO'
+        DataType = ftInteger
+        ParamType = ptInput
+      end>
+    object QAberturasCD_ABERTURA_CAIXA: TIntegerField
+      FieldName = 'CD_ABERTURA_CAIXA'
+      Origin = 'CD_ABERTURA_CAIXA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QAberturasCD_CAIXA: TIntegerField
+      FieldName = 'CD_CAIXA'
+      Origin = 'CD_CAIXA'
+      Required = True
+    end
+    object QAberturasDT_ABERTURA: TDateField
+      FieldName = 'DT_ABERTURA'
+      Origin = 'DT_ABERTURA'
+      Required = True
+    end
+    object QAberturasHR_ABERTURA: TStringField
+      FieldName = 'HR_ABERTURA'
+      Origin = 'HR_ABERTURA'
+      Required = True
+      Size = 5
+    end
+    object QAberturasNM_CAIXA: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NM_CAIXA'
+      Origin = 'NM_CAIXA'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+  end
+  object DsAberturas: TDataSource
+    DataSet = QAberturas
+    Left = 588
+    Top = 82
+  end
+  object QCbSubCategoria: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM SUBCATEGORIAS ORDER BY NM_SUBCATEGORIA')
+    Left = 544
+    Top = 170
+  end
+  object dsCbSubCategoria: TDataSource
+    DataSet = QCbSubCategoria
+    Left = 622
+    Top = 166
+  end
+  object QLista: TFDQuery
+    Connection = DM.DBFinanceiro
+    Left = 588
+    Top = 252
+  end
+end

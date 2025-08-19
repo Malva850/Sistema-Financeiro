@@ -1,0 +1,228 @@
+unit UCidades;
+
+interface
+
+uses
+  FireDAC.Comp.Client;
+
+
+type
+  TCidades = class
+  private
+    FCdCidade: Integer;
+    FNmCidade: String;
+    FUF: String;
+
+    procedure SetCdCidade(const Value: Integer);
+    procedure SetNmCidade(const Value: String);
+    procedure SetUF(const Value: String);
+    function RetornaCidades(PCodigo, PNome, PUF: String;
+      var Query: TFDQuery): boolean;
+
+
+
+  protected
+
+  public
+    constructor create;
+    function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+    function Alterar(var PMensagem:String): Boolean;
+    function Apagar(var PMensagem:String): Boolean;
+    function Localizar(PCodigo, PNome, PUF : String; var Query : TFDQuery): boolean;
+
+
+  published
+    property CdCidade : Integer  read FCdCidade write SetCdCidade;
+    property NmCidade : String  read FNmCidade write SetNmCidade;
+    property UF : String   read FUF write SetUF;
+  end;
+
+
+implementation
+
+{ TCidades }
+
+uses UDM, System.SysUtils;
+
+
+
+{ TCidades }
+
+constructor TCidades.create;
+begin
+  CdCidade := 0;
+  NmCidade := '' ;
+end;
+
+
+
+procedure TCidades.SetCdCidade(const Value: Integer);
+begin
+  FCdCidade := Value;
+end;
+
+procedure TCidades.SetNmCidade(const Value: String);
+begin
+  FNmCidade := Value;
+end;
+
+procedure TCidades.SetUF(const Value: String);
+begin
+  FUF := Value;
+end;
+
+function TCidades.Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCdCidade := DM.GeraSequencial('GEN_CIDADES') ;
+    PCodigo := FCdCidade;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO CIDADES (CD_CIDADE, NM_CIDADE, UF)'+
+                       ' VALUES (:PCD_CIDADE, :PNM_CIDADE, :PUF)');
+    dm.QInsere.ParamByName('PCD_Cidade').AsInteger := FCdCidade ;
+    dm.QInsere.ParamByName('PNM_Cidade').AsString  := FNmCidade;
+    dm.QInsere.ParamByName('PUF').AsString  := FUF;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem :='INSERIDO COM SUCESSO';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCidades.Alterar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE CIDADES SET NM_CIDADE=:PNM_CIDADE, UF=:PUF WHERE CD_CIDADE=:PCD_CIDADE');
+    dm.QUpdate.ParamByName('PNM_Cidade').AsString  := FNmCidade;
+    dm.QUpdate.ParamByName('PCD_Cidade').AsInteger := FCdCidade ;
+    dm.QUpdate.ParamByName('PUF').AsString  := FUF;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem :='ALTERADO COM SUCESSO';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCidades.Apagar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM CIDADES  WHERE CD_CIDADE=:PCD_CIDADE');
+    dm.QUpdate.ParamByName('PCD_CIDADE').AsInteger := FCdCidade ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    PMensagem :='APAGADO COM SUCESSO';
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCidades.Localizar(PCodigo, PNome, PUF : String; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from CIDADES WHERE 1=1');
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CD_CIDADE=:PCD_Cidade') ;
+    Query.ParamByName('PCD_Cidade').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND NM_CIDADE LIKE :PNOME');
+    Query.ParamByName('PNOME').AsString := '%'+PNome+'%';
+  end;
+
+  if trim(PUF)<>'' then
+  begin
+    Query.SQL.Add(' AND UF= :PUF');
+    Query.ParamByName('PUF').AsString := PUF;
+  end;
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+end;
+
+
+function TCidades.RetornaCidades(PCodigo, PNome, PUF : String; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from CIDADES ORDER BY NM_CIDADE ');
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+
+end;
+
+
+
+
+end.

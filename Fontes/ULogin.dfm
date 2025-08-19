@@ -1,0 +1,73 @@
+object frmLogin: TfrmLogin
+  Left = 0
+  Top = 0
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'frmLogin'
+  ClientHeight = 217
+  ClientWidth = 289
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 40
+    Top = 24
+    Width = 36
+    Height = 13
+    Caption = 'Usu'#225'rio'
+  end
+  object Label2: TLabel
+    Left = 40
+    Top = 79
+    Width = 30
+    Height = 13
+    Caption = 'Senha'
+  end
+  object edtLogin: TEdit
+    Left = 40
+    Top = 43
+    Width = 209
+    Height = 21
+    CharCase = ecUpperCase
+    TabOrder = 0
+    Text = 'PROFESSOR'
+  end
+  object edtSenha: TEdit
+    Left = 40
+    Top = 96
+    Width = 209
+    Height = 21
+    CharCase = ecUpperCase
+    PasswordChar = '*'
+    TabOrder = 1
+    Text = '123456'
+  end
+  object btnEntrar: TBitBtn
+    Left = 40
+    Top = 138
+    Width = 75
+    Height = 25
+    Caption = 'Entrar'
+    TabOrder = 2
+    OnClick = btnEntrarClick
+  end
+  object btnSair: TBitBtn
+    Left = 170
+    Top = 138
+    Width = 75
+    Height = 25
+    Caption = 'Sair'
+    TabOrder = 3
+    OnClick = btnSairClick
+  end
+end

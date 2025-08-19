@@ -1,0 +1,184 @@
+inherited frmCadCaixas: TfrmCadCaixas
+  Caption = 'frmCadCaixas'
+  ClientHeight = 313
+  OnCloseQuery = FormCloseQuery
+  ExplicitHeight = 352
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl1: TPageControl
+    Height = 313
+    ActivePage = TabSheet2
+    ExplicitHeight = 242
+    inherited TabSheet1: TTabSheet
+      ExplicitTop = 24
+      ExplicitHeight = 214
+      object Label1: TLabel [0]
+        Left = 3
+        Top = 60
+        Width = 33
+        Height = 13
+        Caption = 'C'#243'digo'
+      end
+      object Label2: TLabel [1]
+        Left = 79
+        Top = 60
+        Width = 27
+        Height = 13
+        Caption = 'Nome'
+      end
+      object Label3: TLabel [2]
+        Left = 482
+        Top = 60
+        Width = 36
+        Height = 13
+        Caption = 'Usu'#225'rio'
+      end
+      inherited ToolBar1: TToolBar
+        inherited ToolButton1: TToolButton
+          OnClick = ToolButton1Click
+        end
+        inherited ToolButton2: TToolButton
+          OnClick = ToolButton2Click
+        end
+        inherited ToolButton3: TToolButton
+          OnClick = ToolButton3Click
+        end
+      end
+      object edtPesqCodigo: TEdit
+        Left = 3
+        Top = 79
+        Width = 70
+        Height = 21
+        TabOrder = 1
+      end
+      object edtPesqNome: TEdit
+        Left = 79
+        Top = 79
+        Width = 397
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 2
+      end
+      object DBLookupComboBox1: TDBLookupComboBox
+        Left = 482
+        Top = 79
+        Width = 145
+        Height = 21
+        KeyField = 'CD_USUARIO'
+        ListField = 'NM_USUARIO'
+        ListSource = DsUsuariosAux
+        TabOrder = 3
+      end
+    end
+    inherited TabSheet2: TTabSheet
+      OnShow = TabSheet2Show
+      ExplicitHeight = 214
+      inherited DBGrid1: TDBGrid
+        Left = 0
+        Top = 0
+        Width = 918
+        Height = 285
+        Align = alClient
+        OnDblClick = DBGrid1DblClick
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'CD_CAIXA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Cod. Caixa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_CAIXA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Nome Caixa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Width = 210
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_USUARIO'
+            Title.Alignment = taCenter
+            Title.Caption = 'Usu'#225'rio'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end>
+      end
+    end
+  end
+  object QUsuariosAux: TFDQuery
+    Active = True
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT'
+      '    USUARIOS.CD_USUARIO,'
+      '    USUARIOS.NM_USUARIO'
+      'FROM'
+      '    USUARIOS')
+    Left = 508
+    Top = 136
+  end
+  object DsUsuariosAux: TDataSource
+    DataSet = QUsuariosAux
+    Left = 580
+    Top = 136
+  end
+  object DsDados: TDataSource
+    DataSet = QDados
+    Left = 386
+    Top = 136
+  end
+  object QDados: TFDQuery
+    SQL.Strings = (
+      'SELECT'
+      '    CAIXAS.CD_CAIXA,'
+      '    CAIXAS.NM_CAIXA,'
+      '    CAIXAS.CD_USUARIO,'
+      '    USUARIOS.NM_USUARIO'
+      'FROM'
+      '    CAIXAS'
+      
+        '    LEFT JOIN USUARIOS ON (USUARIOS.CD_USUARIO = CAIXAS.CD_USUAR' +
+        'IO)')
+    Left = 442
+    Top = 136
+    object QDadosCD_CAIXA: TIntegerField
+      FieldName = 'CD_CAIXA'
+      Origin = 'CD_CAIXA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QDadosNM_CAIXA: TStringField
+      FieldName = 'NM_CAIXA'
+      Origin = 'NM_CAIXA'
+      Size = 70
+    end
+    object QDadosCD_USUARIO: TIntegerField
+      FieldName = 'CD_USUARIO'
+      Origin = 'CD_USUARIO'
+    end
+    object QDadosNM_USUARIO: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NM_USUARIO'
+      Origin = 'NM_USUARIO'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+  end
+end

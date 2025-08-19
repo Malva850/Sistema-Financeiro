@@ -1,0 +1,29 @@
+unit UProcAberturasCaixas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons;
+
+type
+  TfrmProcAberturasCaixas = class(TForm)
+    BitBtn1: TBitBtn;
+    DBLookupComboBox1: TDBLookupComboBox;
+    Label1: TLabel;
+    DBGrid1: TDBGrid;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProcAberturasCaixas: TfrmProcAberturasCaixas;
+
+implementation
+
+{$R *.dfm}
+
+end.

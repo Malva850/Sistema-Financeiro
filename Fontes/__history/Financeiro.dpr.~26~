@@ -1,0 +1,36 @@
+program Financeiro;
+
+uses
+  Vcl.Forms,
+  UPrincipal in 'UPrincipal.pas' {frmPrincipal},
+  UPadrao in 'UPadrao.pas' {frmPadrao},
+  UCadEmpresas in 'UCadEmpresas.pas' {frmCadEmpresas},
+  ULogin in 'ULogin.pas' {frmLogin},
+  UDM in 'UDM.pas' {DM: TDataModule},
+  UCidades in 'UCidades.pas',
+  UUsuario in 'UUsuario.pas',
+  USubCategorias in 'USubCategorias.pas',
+  ULancamentosCaixas in 'ULancamentosCaixas.pas',
+  UCaixas in 'UCaixas.pas',
+  UCadCidades in 'UCadCidades.pas' {frmCadCidades},
+  UCadLancamento in 'UCadLancamento.pas' {frmCadLancamento},
+  UCadSubCategorias in 'UCadSubCategorias.pas' {frmCadSubCategorias},
+  UCadTipoPagamentos in 'UCadTipoPagamentos.pas' {frmTipoPagamentos},
+  UPessoas in 'UPessoas.pas',
+  CadPessoas in 'CadPessoas.pas' {FrmCadPessoas},
+  UEmpresas in 'UEmpresas.pas',
+  UCadCaixas in 'UCadCaixas.pas' {frmCadCaixas},
+  UAberturasCaixas in 'UAberturasCaixas.pas',
+  UProcAberturasCaixas in 'UProcAberturasCaixas.pas' {frmProcAberturasCaixas},
+  ULancamentos in 'ULancamentos.pas',
+  UProcLancamentosCaixas in 'UProcLancamentosCaixas.pas' {frmProcLancamentosCaixas};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TDM, DM);
+  Application.Run;
+end.

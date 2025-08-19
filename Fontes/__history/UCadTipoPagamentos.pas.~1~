@@ -1,0 +1,168 @@
+unit UCadTipoPagamentos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Buttons,
+  Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls, Vcl.ToolWin, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmTipoPagamentos = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    Label3: TLabel;
+    Label4: TLabel;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    edtTipo: TEdit;
+    edtCodigo: TEdit;
+    TabSheet2: TTabSheet;
+    Label1: TLabel;
+    Label2: TLabel;
+    edtTipoPesq: TEdit;
+    edtCodigoPesq: TEdit;
+    DBGrid1: TDBGrid;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    QPesquisa: TFDQuery;
+    DataSource1: TDataSource;
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTipoPagamentos: TfrmTipoPagamentos;
+
+
+implementation
+uses UDM, UTipoPagamentos;
+{$R *.dfm}
+
+procedure TfrmTipoPagamentos.BitBtn1Click(Sender: TObject);
+var
+  objeto : TTipoPagamentos;
+
+begin
+  inherited;
+  objeto := TTipoPagamentos.create;
+  objeto.Localizar(edtCodigoPesq.Text, edtTipoPesq.Text, QPesquisa);
+  objeto.Free;
+end;
+
+procedure TfrmTipoPagamentos.BitBtn2Click(Sender: TObject);
+begin
+  inherited;
+  edtCodigo.Text :=  QPesquisa.FieldByName('CD_TIPO_PAGAMENTO').AsString;
+  edtTipo.Text   :=  QPesquisa.FieldByName('NM_TIPO_PAGAMENTO').AsString;
+end;
+
+procedure TfrmTipoPagamentos.ToolButton1Click(Sender: TObject);
+begin
+  inherited;
+  edtCodigo.Clear;
+  edtTipo.Clear;
+  edtTipo.SetFocus;
+end;
+
+procedure TfrmTipoPagamentos.ToolButton2Click(Sender: TObject);
+var
+  objeto : TTipoPagamentos;
+
+  vCodigo : integer;
+  vMensagem : string ;
+begin
+  inherited;
+  objeto := TTipoPagamentos.create;
+
+  objeto.NMPagamento := edtTipo.Text;
+
+  if trim(edtCodigo.Text) = '' then
+  begin
+
+    if objeto.Inserir(vCodigo, vMensagem) = true then
+    begin
+      edtCodigo.Text := inttostr(vCodigo);
+
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO INSERIR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+  end
+  else
+  begin
+    objeto.CDPagamento := StrToInt(edtCodigo.Text);
+
+    if objeto.Alterar(vMensagem) = true then
+    begin
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO ALTERAR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+
+  end;
+
+  objeto.Free;
+
+  QPesquisa.Close;
+
+end;
+
+procedure TfrmTipoPagamentos.ToolButton3Click(Sender: TObject);
+var
+  objeto : TTipoPagamentos;
+  vMensagem : string ;
+begin
+  inherited;
+
+  if Trim(edtCodigo.Text) = '' then
+  begin
+    Application.MessageBox(Pchar('Localize um tipo de pagamento!') , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    exit;
+  end ;
+
+  if  Application.MessageBox('Deseja excluír?' , 'Aviso', MB_ICONQUESTION + MB_YESNO) = IDYES then
+  begin
+    objeto := TTipoPagamentos.create;
+
+    objeto.CDPagamento := StrToInt(edtCodigo.Text);
+
+    if objeto.Apagar(vMensagem) then
+    begin
+       ToolButton1.OnClick(self);
+       Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+       Application.MessageBox(Pchar('ERRO AO APAGAR REGISTRO!!'+#10+
+                              'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+
+    end;
+  end;
+
+   objeto.Free;
+
+   QPesquisa.Close;
+
+
+end;
+
+end.

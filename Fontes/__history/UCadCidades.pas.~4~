@@ -1,0 +1,125 @@
+unit UCadCidades;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, UPadrao, Data.DB, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin;
+
+type
+  TfrmCadCidades = class(TfrmPadrao)
+    edtUF: TEdit;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    edtNome: TEdit;
+    edtCodigo: TEdit;
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCadCidades: TfrmCadCidades;
+
+implementation
+
+{$R *.dfm}
+
+uses UCidades;
+
+procedure TfrmCadCidades.ToolButton1Click(Sender: TObject);
+begin
+  inherited;
+  edtCodigo.Clear;
+  edtNome.Clear;
+  edtUF.Clear;
+  edtNome.SetFocus;
+end;
+
+procedure TfrmCadCidades.ToolButton2Click(Sender: TObject);
+var
+  objeto : TCidades;
+
+  vCodigo : integer;
+  vMensagem : string ;
+begin
+  inherited;
+  objeto := TCidades.create;
+
+  objeto.NmCidade := edtNome.Text;
+  objeto.UF       := edtUF.Text ;
+
+  if trim(edtCodigo.Text) = '' then
+  begin
+
+    if objeto.Inserir(vCodigo, vMensagem) = true then
+    begin
+      edtCodigo.Text := inttostr(vCodigo);
+
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO INSERIR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+  end
+  else
+  begin
+    objeto.CdCidade := StrToInt(edtCodigo.Text);
+
+    if objeto.Alterar(vMensagem) = true then
+    begin
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO ALTERAR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+
+
+  end;
+
+
+  objeto.Free;
+
+
+end;
+
+procedure TfrmCadCidades.ToolButton3Click(Sender: TObject);
+var
+  objeto : TCidades;
+  vMensagem : string ;
+begin
+  inherited;
+
+  objeto := TCidades.create;
+
+  objeto.CdCidade := StrToInt(edtCodigo.Text);
+
+  if objeto.Apagar(vMensagem) then
+  begin
+     Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+  end
+  else
+  begin
+     Application.MessageBox(Pchar('ERRO AO APAGAR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+
+  end;
+
+   objeto.Free;
+
+end;
+
+end.

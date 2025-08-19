@@ -1,0 +1,253 @@
+object frmProcAberturasCaixas: TfrmProcAberturasCaixas
+  Left = 0
+  Top = 0
+  BorderStyle = bsSingle
+  Caption = 'Processo [ABERTURA DE CAIXAS]'
+  ClientHeight = 440
+  ClientWidth = 849
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  Visible = True
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 252
+    Top = 68
+    Width = 27
+    Height = 13
+    Caption = 'Caixa'
+  end
+  object Label9: TLabel
+    Left = 25
+    Top = 71
+    Width = 61
+    Height = 13
+    Caption = 'Dt. Abertura'
+  end
+  object Label2: TLabel
+    Left = 155
+    Top = 71
+    Width = 61
+    Height = 13
+    Caption = 'Hr. Abertura'
+  end
+  object BitBtn1: TBitBtn
+    Left = 548
+    Top = 78
+    Width = 273
+    Height = 39
+    Caption = 'Abrir Caixa'
+    TabOrder = 0
+    OnClick = BitBtn1Click
+  end
+  object DbLookCaixas: TDBLookupComboBox
+    Left = 252
+    Top = 87
+    Width = 267
+    Height = 21
+    KeyField = 'CD_CAIXA'
+    ListField = 'NM_CAIXA'
+    ListSource = dsCaixas
+    TabOrder = 1
+  end
+  object DBGrid1: TDBGrid
+    Left = 22
+    Top = 126
+    Width = 805
+    Height = 285
+    DataSource = dsAberturas
+    PopupMenu = PopupMenu1
+    TabOrder = 2
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'NM_CAIXA'
+        Width = 149
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DT_ABERTURA'
+        Width = 91
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'HR_ABERTURA'
+        Width = 101
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DT_FECHAMENTO'
+        Width = 137
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'HR_FECHAMENTO'
+        Width = 111
+        Visible = True
+      end>
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 849
+    Height = 59
+    Align = alTop
+    BorderStyle = bsSingle
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 3
+    ExplicitWidth = 910
+    object edtIdUsuario: TEdit
+      Left = 714
+      Top = 6
+      Width = 121
+      Height = 33
+      TabOrder = 0
+      Text = 'edtIdUsuario'
+      Visible = False
+    end
+  end
+  object edtAbertura: TMaskEdit
+    Left = 25
+    Top = 87
+    Width = 118
+    Height = 21
+    EditMask = '99/99/9999;1; '
+    MaxLength = 10
+    TabOrder = 4
+    Text = '  /  /    '
+    OnExit = edtAberturaExit
+  end
+  object edtHora: TMaskEdit
+    Left = 155
+    Top = 87
+    Width = 74
+    Height = 21
+    EditMask = '99:99;1; '
+    MaxLength = 5
+    TabOrder = 5
+    Text = '  :  '
+    OnExit = edtHoraExit
+  end
+  object QCaixas: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM CAIXAS')
+    Left = 380
+    Top = 166
+    object QCaixasCD_CAIXA: TIntegerField
+      FieldName = 'CD_CAIXA'
+      Origin = 'CD_CAIXA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QCaixasNM_CAIXA: TStringField
+      FieldName = 'NM_CAIXA'
+      Origin = 'NM_CAIXA'
+      Required = True
+      Size = 50
+    end
+  end
+  object dsCaixas: TDataSource
+    DataSet = QCaixas
+    Left = 330
+    Top = 166
+  end
+  object dsAberturas: TDataSource
+    DataSet = QAberturas
+    Left = 324
+    Top = 336
+  end
+  object QAberturas: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT ac.*, c.nm_caixa'
+      ' FROM aberturas_caixas AC, CAIXAS C'
+      ' WHERE AC.cd_caixa=C.cd_CAIXA'
+      ' AND AC.cd_usuario=1'
+      ' ORDER BY AC.dt_abertura')
+    Left = 398
+    Top = 332
+    object QAberturasCD_ABERTURA_CAIXA: TIntegerField
+      FieldName = 'CD_ABERTURA_CAIXA'
+      Origin = 'CD_ABERTURA_CAIXA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QAberturasCD_CAIXA: TIntegerField
+      FieldName = 'CD_CAIXA'
+      Origin = 'CD_CAIXA'
+      Required = True
+    end
+    object QAberturasDT_ABERTURA: TDateField
+      FieldName = 'DT_ABERTURA'
+      Origin = 'DT_ABERTURA'
+      Required = True
+    end
+    object QAberturasHR_ABERTURA: TStringField
+      FieldName = 'HR_ABERTURA'
+      Origin = 'HR_ABERTURA'
+      Required = True
+      Size = 5
+    end
+    object QAberturasDT_FECHAMENTO: TDateField
+      FieldName = 'DT_FECHAMENTO'
+      Origin = 'DT_FECHAMENTO'
+    end
+    object QAberturasHR_FECHAMENTO: TStringField
+      FieldName = 'HR_FECHAMENTO'
+      Origin = 'HR_FECHAMENTO'
+      Size = 5
+    end
+    object QAberturasCD_USUARIO: TIntegerField
+      FieldName = 'CD_USUARIO'
+      Origin = 'CD_USUARIO'
+      Required = True
+    end
+    object QAberturasNM_CAIXA: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NM_CAIXA'
+      Origin = 'NM_CAIXA'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 698
+    Top = 208
+    object FecharCaixa1: TMenuItem
+      Caption = 'Fechar Caixa'
+      OnClick = FecharCaixa1Click
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object ApagarRegistro1: TMenuItem
+      Caption = 'Apagar Registro'
+      OnClick = ApagarRegistro1Click
+    end
+  end
+end

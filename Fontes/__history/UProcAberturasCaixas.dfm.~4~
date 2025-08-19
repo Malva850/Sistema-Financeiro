@@ -1,0 +1,83 @@
+object frmProcAberturasCaixas: TfrmProcAberturasCaixas
+  Left = 0
+  Top = 0
+  BorderStyle = bsSingle
+  Caption = 'Processo [ABERTURA DE CAIXAS]'
+  ClientHeight = 397
+  ClientWidth = 702
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  Visible = True
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 24
+    Top = 20
+    Width = 27
+    Height = 13
+    Caption = 'Caixa'
+  end
+  object BitBtn1: TBitBtn
+    Left = 464
+    Top = 27
+    Width = 191
+    Height = 39
+    Caption = 'Abrir Caixa'
+    TabOrder = 0
+  end
+  object DbLookCaixas: TDBLookupComboBox
+    Left = 24
+    Top = 39
+    Width = 409
+    Height = 21
+    KeyField = 'CD_CAIXA'
+    ListField = 'NM_CAIXA'
+    ListSource = dsCaixas
+    TabOrder = 1
+  end
+  object DBGrid1: TDBGrid
+    Left = 22
+    Top = 76
+    Width = 647
+    Height = 289
+    TabOrder = 2
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+  object QCaixas: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT * FROM CAIXAS')
+    Left = 382
+    Top = 134
+    object QCaixasCD_CAIXA: TIntegerField
+      FieldName = 'CD_CAIXA'
+      Origin = 'CD_CAIXA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QCaixasNM_CAIXA: TStringField
+      FieldName = 'NM_CAIXA'
+      Origin = 'NM_CAIXA'
+      Required = True
+      Size = 50
+    end
+  end
+  object dsCaixas: TDataSource
+    DataSet = QCaixas
+    Left = 328
+    Top = 136
+  end
+end

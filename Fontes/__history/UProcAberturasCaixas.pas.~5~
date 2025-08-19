@@ -1,0 +1,91 @@
+unit UProcAberturasCaixas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ExtCtrls, Vcl.Mask;
+
+type
+  TfrmProcAberturasCaixas = class(TForm)
+    BitBtn1: TBitBtn;
+    DbLookCaixas: TDBLookupComboBox;
+    Label1: TLabel;
+    DBGrid1: TDBGrid;
+    QCaixas: TFDQuery;
+    dsCaixas: TDataSource;
+    QCaixasCD_CAIXA: TIntegerField;
+    QCaixasNM_CAIXA: TStringField;
+    Panel1: TPanel;
+    edtIdUsuario: TEdit;
+    edtAbertura: TMaskEdit;
+    Label9: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure edtAberturaExit(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProcAberturasCaixas: TfrmProcAberturasCaixas;
+
+implementation
+
+{$R *.dfm}
+
+uses UCaixas, UDM, UAberturasCaixas;
+
+procedure TfrmProcAberturasCaixas.BitBtn1Click(Sender: TObject);
+var
+  Abcaixa : TAberturasCaixas;
+  vcodigo, retorno : string;
+begin
+  Abcaixa := TAberturasCaixas.create;
+
+  Abcaixa.CdCaixa := DbLookCaixas.KeyValue;
+  Abcaixa.CdUsuario := strtoint(edtIdUsuario.Text);
+
+  Abcaixa.Inserir(vcodigo, retorno);
+  Abcaixa.Free;
+
+end;
+
+procedure TfrmProcAberturasCaixas.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfrmProcAberturasCaixas.FormCreate(Sender: TObject);
+var
+  caixa : TCaixas;
+begin
+  Panel1.Caption := 'Login: '+ UsuarioLogado;
+
+  edtIdUsuario.Text := IntToStr(IdUsuarioLogado);
+
+
+  caixa := TCaixas.create;
+  caixa.RetornaCaixasUsuarios(IdUsuarioLogado, QCaixas);
+  caixa.Free;
+
+end;
+
+procedure TfrmProcAberturasCaixas.edtAberturaExit(Sender: TObject);
+begin
+  try
+    StrToDate(edtAbertura.Text);
+  except
+    ShowMessage('Data inválida!');
+  end;
+end;
+
+end.

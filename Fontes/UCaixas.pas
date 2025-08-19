@@ -1,0 +1,229 @@
+unit UCaixas;
+
+interface
+
+uses
+  FireDAC.Comp.Client;
+
+type
+  TCaixas = class
+  private
+    FCdCaixa: Integer;
+    FNmCaixa: String;
+    FCdUsuario: Integer;
+    procedure SetCdCaixa (const Value: Integer);
+    procedure SetNmCaixa(const Value: String);
+    procedure SetCdUsuario(const Value: Integer);
+
+
+ public
+    constructor create;
+    function Inserir(PCodigo : Integer; PMensagem:String): Boolean;
+    function Alterar(PMensagem:String): Boolean;
+    function Apagar(PMensagem:String): Boolean;
+    function Localizar(PCodigo, PNome : String; PUsuario : Integer; var Query : TFDQuery): boolean;
+    function RetornaCaixasUsuarios(PCodigoUsuario: Integer; var Query: TFDQuery): boolean;
+
+ published
+    property CdCaixa : Integer  read FCdCaixa write SetCdCaixa;
+    property NmCaixa : String  read FNmCaixa write SetNmCaixa;
+    property CdUsuario : Integer  read FCdUsuario write SetCdUsuario;
+
+  end;
+
+
+implementation
+
+uses UDM, System.SysUtils;
+
+constructor TCaixas.create;
+begin
+  FCdCaixa := 0;
+  FNmCaixa := '';
+  FCdUsuario := 0;
+end;
+
+procedure TCaixas.SetCdCaixa(const Value: Integer);
+begin
+  FCdCaixa := Value;
+end;
+
+procedure TCaixas.SetNmCaixa(const Value: String);
+begin
+  FNmCaixa := Value;
+end;
+
+procedure TCaixas.SetCdUsuario(const Value: Integer);
+begin
+  FCdUsuario := Value;
+end;
+
+function TCaixas.Inserir(PCodigo : Integer; PMensagem:String): Boolean;
+begin
+  try
+    dm.DBFinanceiro.StartTransaction;
+    FCdCaixa := DM.GeraSequencial('GEN_CAIXAS') ;
+    PCodigo := FCdCaixa;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO CAIXAS (CD_CAIXA, NM_CAIXA, CD_USUARIO)'+
+                       ' VALUES (:PCD_CAIXA, :PNM_CAIXA, :PCD_USUARIO)');
+    dm.QInsere.ParamByName('PCD_CAIXA').AsInteger := CdCaixa ;
+    dm.QInsere.ParamByName('PNM_CAIXA').AsString  := NmCaixa;
+    dm.QInsere.ParamByName('PCD_USUARIO').AsInteger := CdUsuario ;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCaixas.Alterar(PMensagem:String): Boolean;
+begin
+  try
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE CAIXAS SET NM_CAIXA = :PNM_CAIXA, CD_USUARIO = :PCD_USUARIO WHERE CD_CAIXA=:PCD_CAIXA');
+    dm.QUpdate.ParamByName('PNM_CAIXA').AsString  := NmCaixa;
+    dm.QUpdate.ParamByName('PCD_CAIXA').AsInteger := CdCaixa;
+    dm.QUpdate.ParamByName('PCD_USUARIO').AsInteger := CdUsuario;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCaixas.Apagar(PMensagem:String): Boolean;
+begin
+  try
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM CAIXAS WHERE CD_CAIXA=:PCD_CAIXA');
+    dm.QUpdate.ParamByName('PCD_CAIXA').AsInteger := CdCaixa ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCaixas.Localizar(PCodigo, PNome : String; PUsuario : Integer; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Text :=
+        ' SELECT '+
+        '     CAIXAS.CD_CAIXA, '+
+        '     CAIXAS.NM_CAIXA, '+
+        '     CAIXAS.CD_USUARIO, '+
+        '     USUARIOS.NM_USUARIO '+
+        ' FROM '+
+        '     CAIXAS '+
+        '     LEFT JOIN USUARIOS ON (USUARIOS.CD_USUARIO = CAIXAS.CD_USUARIO) '+
+        ' WHERE '+
+        '     1=1';
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CAIXAS.CD_CAIXA=:PCD_CAIXA') ;
+    Query.ParamByName('PCD_CAIXA').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND CAIXAS.NM_CAIXA LIKE :PNOME');
+    Query.ParamByName('PNOME').AsString := '%'+PNome+'%';
+  end;
+
+  if PUsuario > 0 then
+  begin
+    Query.SQL.Add(' AND CAIXAS.CD_USUARIO=:PCD_USUARIO') ;
+    Query.ParamByName('PCD_USUARIO').AsInteger := PUsuario ;
+  end;
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+
+
+end;
+
+
+function TCaixas.RetornaCaixasUsuarios(PCodigoUsuario: Integer; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Text :=
+        ' SELECT '+
+        '     CAIXAS.CD_CAIXA, '+
+        '     CAIXAS.NM_CAIXA '+
+        ' FROM '+
+        '     CAIXAS '+
+        ' WHERE '+
+        '  CAIXAS.CD_USUARIO=:PCD_USUARIO'+
+        ' ORDER BY CAIXAS.NM_CAIXA';
+  Query.ParamByName('PCD_USUARIO').AsInteger := PCodigoUsuario ;
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+
+
+end;
+
+
+
+
+end.

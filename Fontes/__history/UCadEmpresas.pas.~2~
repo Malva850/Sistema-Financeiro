@@ -1,0 +1,25 @@
+unit UCadEmpresas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, UPadrao, Vcl.StdCtrls;
+
+type
+  TfrmCadEmpresas = class(TfrmPadrao)
+    Button1: TButton;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCadEmpresas: TfrmCadEmpresas;
+
+implementation
+
+{$R *.dfm}
+
+end.

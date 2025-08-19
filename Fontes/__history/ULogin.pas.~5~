@@ -1,0 +1,78 @@
+unit ULogin;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons;
+
+type
+  TfrmLogin = class(TForm)
+    edtLogin: TEdit;
+    edtSenha: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+    vAutorizado : Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLogin: TfrmLogin;
+
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmLogin.BitBtn1Click(Sender: TObject);
+begin
+  //select...
+
+  if (edtLogin.Text='ADMIN') and (edtSenha.Text='1') then
+  begin
+    vAutorizado := true;
+    frmLogin.Close;
+  end
+  else
+  begin
+    vAutorizado := false;
+    ShowMessage('Login ou senha inválido!');
+  end;
+
+
+end;
+
+procedure TfrmLogin.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfrmLogin.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if vAutorizado = true then
+  begin
+    CanClose := true;
+  end
+  else
+  begin
+    CanClose := false;
+  end;
+
+
+end;
+
+procedure TfrmLogin.FormCreate(Sender: TObject);
+begin
+  vAutorizado := false;
+end;
+
+end.

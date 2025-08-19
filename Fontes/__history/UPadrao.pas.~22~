@@ -1,0 +1,149 @@
+unit UPadrao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
+  Vcl.Imaging.pngimage, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet, System.ImageList,
+  Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin, Vcl.Grids, Vcl.DBGrids,
+  Datasnap.DBClient;
+
+type
+  TfrmPadrao = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
+    Button1: TButton;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Button2: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    edtPesqCodigo: TEdit;
+    QDados: TFDQuery;
+    DsDados: TDataSource;
+    DBGrid1: TDBGrid;
+    edtPesqNome: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPadrao: TfrmPadrao;
+
+implementation
+
+{$R *.dfm}
+
+uses UDM, UPrincipal, UCategorias;
+
+procedure TfrmPadrao.Button1Click(Sender: TObject);
+Var
+  ob : TCategorias;
+  vCodigo : Integer;
+  vMensagem : String;
+begin
+  ob := TCategorias.create;
+  ob.NmCategoria := EDIT2.Text;
+
+  if ob.Inserir(vCodigo, vMensagem ) = true then
+  begin
+    Edit1.Text := vCodigo.ToString;
+    Application.MessageBox( 'REGISTRO INSERIDO COM SUCESSO!', 'Aviso', MB_ICONEXCLAMATION + MB_OK);
+  end
+  else
+  begin
+    Application.MessageBox(Pchar('REGISTRO AO INSERIR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONSTOP + MB_OK);
+  end;
+
+  ob.Free;
+
+
+end;
+
+procedure TfrmPadrao.Button2Click(Sender: TObject);
+Var
+  ob : TCategorias;
+  vMensagem : String;
+begin
+  ob := TCategorias.create;
+
+  ob.CdCategoria := StrToInt(Edit1.Text);
+  ob.NmCategoria := EDIT2.Text;
+
+  if ob.Alterar( vMensagem ) = true then
+  begin
+    Application.MessageBox( 'REGISTRO ALTERADO COM SUCESSO!', 'Aviso', MB_ICONEXCLAMATION + MB_OK);
+  end
+  else
+  begin
+    Application.MessageBox(Pchar('ERRO AO ALTERAR REGISTRO!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONSTOP + MB_OK);
+  end;
+
+  ob.Free;
+end;
+
+procedure TfrmPadrao.Button4Click(Sender: TObject);
+Var
+  ob : TCategorias;
+  vMensagem : String;
+begin
+  ob := TCategorias.create;
+  ob.CdCategoria := StrToInt(Edit1.Text);
+
+  if ob.Apagar( vMensagem ) = true then
+  begin
+    Application.MessageBox( 'REGISTRO APAGADO COM SUCESSO!', 'Aviso', MB_ICONEXCLAMATION + MB_OK);
+  end
+  else
+  begin
+    Application.MessageBox(Pchar('ERRO AO APAGAR REGISTRO!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONSTOP + MB_OK);
+  end;
+
+
+
+  ob.Free;
+
+end;
+
+procedure TfrmPadrao.Button5Click(Sender: TObject);
+Var
+  ob : TCategorias;
+begin
+  ob := TCategorias.create;
+  ob.Localizar(edtPesqCodigo.Text,  edtPesqNome.Text, QDados);
+  ob.Free;
+
+end;
+
+procedure TfrmPadrao.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+end.

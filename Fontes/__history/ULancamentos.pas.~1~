@@ -1,0 +1,249 @@
+unit ULancamentos;
+
+interface
+
+type
+  Lancamentos = class
+  private
+    FCdLancamentoCaixa: Integer;
+    FCdTipoPagamento: Integer;
+    FCdSubcategoria: Integer;
+    FCdEmpresa: Integer;
+    FDescricao: string;
+    FCdUsuario: Integer;
+    FVlPagamento: Extended;
+    FCdLancamento: Integer;
+    FDtSistema: TDateTime;
+    FDtVencimento: TDate;
+    FCdPessoa: Integer;
+    FDtPagamento: TDate;
+    FVlLancamento: Extended;
+    procedure SetCdEmpresa(const Value: Integer);
+    procedure SetCdLancamento(const Value: Integer);
+    procedure SetCdLancamentoCaixa(const Value: Integer);
+    procedure SetCdPessoa(const Value: Integer);
+    procedure SetCdSubcategoria(const Value: Integer);
+    procedure SetCdTipoPagamento(const Value: Integer);
+    procedure SetCdUsuario(const Value: Integer);
+    procedure SetDescricao(const Value: string);
+    procedure SetDtPagamento(const Value: TDate);
+    procedure SetDtSistema(const Value: TDateTime);
+    procedure SetDtVencimento(const Value: TDate);
+    procedure SetVlLancamento(const Value: Extended);
+    procedure SetVlPagamento(const Value: Extended);
+    
+  protected
+    
+  public 
+    function Inserir(var codigo: Integer; var mensagem: string):Boolean;
+    function Alterar(var mensagem:string):Boolean;
+    function Deletar(var mensagem:string): Boolean;                     
+
+  published
+    property CdLancamento: Integer read FCdLancamento write SetCdLancamento;
+    property CdEmpresa: Integer read FCdEmpresa write SetCdEmpresa;
+    property CdSubcategoria: Integer read FCdSubcategoria write SetCdSubcategoria;
+    property CdPessoa: Integer read FCdPessoa write SetCdPessoa;
+    property CdTipoPagamento: Integer read FCdTipoPagamento write SetCdTipoPagamento;
+    property Descricao: string read FDescricao write SetDescricao;
+    property DtSistema: TDateTime read FDtSistema write SetDtSistema;
+    property CdUsuario: Integer read FCdUsuario write SetCdUsuario;
+    property DtVencimento: TDate read FDtVencimento write SetDtVencimento;
+    property VlLancamento: Extended read FVlLancamento write SetVlLancamento;
+    property DtPagamento: TDate read FDtPagamento write SetDtPagamento;
+    property VlPagamento: Extended read FVlPagamento write SetVlPagamento;
+    property CdLancamentoCaixa: Integer read FCdLancamentoCaixa write SetCdLancamentoCaixa;
+    
+  end;
+
+implementation
+
+uses UDM, System.SysUtils;
+
+function Lancamentos.Alterar(var mensagem: string): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE LANCAMENTOS SET CD_EMPRESA=:CD_EMPRESA, ' +
+                       ' CD_SUBCATEGORIA=:CD_SUBCATEGORIA, CD_PESSOA=:CD_PESSOA, ' +
+                       ' CD_TIPO_PAGAMENTO=:CD_TIPO_PAGAMENTO, DESCRICAO=: DESCRICAO, ' +
+                       ' DT_SISTEMA=:DT_SISTEMA, CD_USUARIO=:CD_USUARIO, ' +
+                       ' DT_VENCIMENTO=:DT_VENCIMENTO, VL_LANCAMENTO=: VL_LANCAMENTO, ' +
+                       ' DT_PAGAMENTO=:DT_PAGAMENTO, VL_PAGAMENTO=:VL_PAGAMENTO, ' +
+                       ' CD_LANCAMENTO_CAIXA=:CD_LANCAMENTO_CAIXA ' +
+                       ' WHERE CD_LANCAMENTO=:CD_LANCAMENTO');
+                       
+    dm.QUpdate.ParamByName('CD_LANCAMENTO').AsInteger := FCdLancamento;
+    dm.QUpdate.ParamByName('CD_EMPRESA').AsInteger := FCdEmpresa;
+    dm.QUpdate.ParamByName('CD_SUBCATEGORIA').AsInteger := FCdSubcategoria ;
+    dm.QUpdate.ParamByName('CD_PESSOA').AsInteger := FCdPessoa ;
+    dm.QUpdate.ParamByName('CD_TIPO_PAGAMENTO').AsInteger  := FCdTipoPagamento;
+    dm.QUpdate.ParamByName('DESCRICAO').AsString := FDescricao;
+    dm.QUpdate.ParamByName('DT_SISTEMA').AsDateTime := FDtSistema;
+    dm.QUpdate.ParamByName('CD_USUARIO').AsInteger := FCdUsuario;
+    dm.QUpdate.ParamByName('DT_VENCIMENTO').AsDate := FDtVencimento;
+    dm.QUpdate.ParamByName('VL_LANCAMENTO').AsExtended := FVlLancamento;
+    dm.QUpdate.ParamByName('DT_PAGAMENTO').AsDate := FDtPagamento;
+    dm.QUpdate.ParamByName('VL_PAGAMENTO').AsExtended := FVlLancamento;
+    dm.QUpdate.ParamByName('CD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      mensagem := E.Message;
+      Result := false;
+    end;
+  end;
+end;
+
+function Lancamentos.Deletar(var mensagem: string): Boolean;
+begin
+   try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QDelete.Close;
+    dm.QDelete.SQL.Clear;
+    dm.QDelete.SQL.Add(' DELETE FROM LANCAMENTOS WHERE CD_LANCAMENTO=:CD_LANCAMENTO');
+    dm.QDelete.ParamByName('CD_LANCAMENTO').AsInteger := FCdLancamento;
+    dm.QDelete.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      mensagem := E.Message;
+      Result := false;
+    end;
+  end;
+end;
+
+function Lancamentos.Inserir(var codigo: Integer; var mensagem: string): Boolean;
+begin
+   try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCdLancamento := dm.GeraSequencia('GEN_LANCAMENTOS') ;
+    codigo := FCdLancamento;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO LANCAMENTOS (CD_LANCAMENTO, CD_EMPRESA, '+
+                       ' CD_SUBCATEGORIA, CD_PESSOA, CD_TIPO_PAGAMENTO, DESCRICAO, ' +
+                       ' DT_SISTEMA, CD_USUARIO, DT_VENCIMENTO, VL_LANCAMENTO, ' +
+                       ' DT_PAGAMENTO, VL_PAGAMENTO, CD_LANCAMENTO_CAIXA) ' +
+                       ' VALUES (:CD_LANCAMENTO, :CD_EMPRESA, ' +
+                       ' :CD_SUBCATEGORIA, :CD_PESSOA, :CD_TIPO_PAGAMENTO, :DESCRICAO, ' +
+                       ' :DT_SISTEMA, :CD_USUARIO, :DT_VENCIMENTO, :VL_LANCAMENTO, ' +
+                       ' :DT_PAGAMENTO, :VL_PAGAMENTO, :CD_LANCAMENTO_CAIXA)');
+                       
+    dm.QInsere.ParamByName('CD_LANCAMENTO').AsInteger := FCdLancamento;
+    dm.QInsere.ParamByName('CD_EMPRESA').AsInteger := FCdEmpresa;
+    dm.QInsere.ParamByName('CD_SUBCATEGORIA').AsInteger := FCdSubcategoria ;
+    dm.QInsere.ParamByName('CD_PESSOA').AsInteger := FCdPessoa ;
+    dm.QInsere.ParamByName('CD_TIPO_PAGAMENTO').AsInteger  := FCdTipoPagamento;
+    dm.QInsere.ParamByName('DESCRICAO').AsString := FDescricao;
+    dm.QInsere.ParamByName('DT_SISTEMA').AsDateTime := FDtSistema;
+    dm.QInsere.ParamByName('CD_USUARIO').AsInteger := FCdUsuario;
+    dm.QInsere.ParamByName('DT_VENCIMENTO').AsDate := FDtVencimento;
+    dm.QInsere.ParamByName('VL_LANCAMENTO').AsExtended := FVlLancamento;
+    dm.QInsere.ParamByName('DT_PAGAMENTO').AsDate := FDtPagamento;
+    dm.QInsere.ParamByName('VL_PAGAMENTO').AsExtended := FVlLancamento;
+    dm.QInsere.ParamByName('CD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      mensagem := e.Message;
+      Result := false;
+    end;
+  end;
+end;
+
+procedure Lancamentos.SetCdEmpresa(const Value: Integer);
+begin
+  FCdEmpresa := Value;
+end;
+
+procedure Lancamentos.SetCdLancamento(const Value: Integer);
+begin
+  FCdLancamento := Value;
+end;
+
+procedure Lancamentos.SetCdLancamentoCaixa(const Value: Integer);
+begin
+  FCdLancamentoCaixa := Value;
+end;
+
+procedure Lancamentos.SetCdPessoa(const Value: Integer);
+begin
+  FCdPessoa := Value;
+end;
+
+procedure Lancamentos.SetCdSubcategoria(const Value: Integer);
+begin
+  FCdSubcategoria := Value;
+end;
+
+procedure Lancamentos.SetCdTipoPagamento(const Value: Integer);
+begin
+  FCdTipoPagamento := Value;
+end;
+
+procedure Lancamentos.SetCdUsuario(const Value: Integer);
+begin
+  FCdUsuario := Value;
+end;
+
+procedure Lancamentos.SetDescricao(const Value: string);
+begin
+  FDescricao := Value;
+end;
+
+procedure Lancamentos.SetDtPagamento(const Value: TDate);
+begin
+  FDtPagamento := Value;
+end;
+
+procedure Lancamentos.SetDtSistema(const Value: TDateTime);
+begin
+  FDtSistema := Value;
+end;
+
+procedure Lancamentos.SetDtVencimento(const Value: TDate);
+begin
+  FDtVencimento := Value;
+end;
+
+procedure Lancamentos.SetVlLancamento(const Value: Extended);
+begin
+  FVlLancamento := Value;
+end;
+
+procedure Lancamentos.SetVlPagamento(const Value: Extended);
+begin
+  FVlPagamento := Value;
+end;
+
+end.

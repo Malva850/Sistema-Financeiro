@@ -1,0 +1,5 @@
+inherited frmCadCidades: TfrmCadCidades
+  Caption = 'frmCadCidades'
+  PixelsPerInch = 96
+  TextHeight = 13
+end

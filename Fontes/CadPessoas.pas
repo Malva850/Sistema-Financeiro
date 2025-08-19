@@ -1,0 +1,206 @@
+unit CadPessoas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Mask, Vcl.StdCtrls, Vcl.ComCtrls,
+  Vcl.ToolWin, UPessoas, UDM, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Buttons, Vcl.Grids, Vcl.DBGrids;
+
+type
+  TFrmCadPessoas = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    EditP_Nome: TEdit;
+    MaskEdit1_CPF: TMaskEdit;
+    EditP_Celular: TEdit;
+    Label3: TLabel;
+    Label4: TLabel;
+    EditCod_Pessoas: TEdit;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    QPesquisa_Pessoas: TFDQuery;
+    DsPesquisa_Pessoa: TDataSource;
+    DBGrid1: TDBGrid;
+    QPesquisa_PessoasCD_PESSOA: TIntegerField;
+    QPesquisa_PessoasNR_CPF_CNPJ: TStringField;
+    QPesquisa_PessoasNM_PESSOA: TStringField;
+    QPesquisa_PessoasNR_CELULAR: TStringField;
+    BitBtn1: TBitBtn;
+    EditCodigoPes: TEdit;
+    EditNomePes: TEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    BitBtn2: TBitBtn;
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure ToolButton4Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadPessoas: TFrmCadPessoas;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmCadPessoas.BitBtn1Click(Sender: TObject);
+var
+  objeto : TPessoas;
+begin
+  objeto := TPessoas.create;
+  objeto.Localizar(EditCodigoPes.Text, editNomePes.Text,  QPesquisa_Pessoas);
+  objeto.Free;
+end;
+
+procedure TFrmCadPessoas.BitBtn2Click(Sender: TObject);
+begin
+ inherited;
+  if QPesquisa_Pessoas.IsEmpty then
+  begin
+    raise Exception.Create('Você não selecionou nenhum registro!');
+  end;
+
+
+
+  EditCod_Pessoas.Text :=   QPesquisa_PessoasCD_PESSOA.AsString;
+  EditP_Nome.Text   :=  QPesquisa_PessoasNM_PESSOA.AsString;
+  MaskEdit1_CPF.Text    :=  QPesquisa_PessoasNR_CPF_CNPJ.AsString;
+  EditP_Celular.Text := QPesquisa_PessoasNR_CELULAR.AsString;
+
+   PageControl1.ActivePage := TabSheet1;
+end;
+
+procedure TFrmCadPessoas.ToolButton1Click(Sender: TObject);
+begin
+  inherited;
+  EditCod_Pessoas.Clear;
+  editP_Nome.Clear;
+  EditP_Celular.Clear;
+  MaskEdit1_CPF.Clear;
+  EditP_Nome.SetFocus;
+end;
+
+procedure TFrmCadPessoas.ToolButton2Click(Sender: TObject);
+var
+objeto : TPessoas;
+
+  vCodigo : integer;
+  vMensagem : string ;
+begin
+  inherited;
+  objeto := TPessoas.create;
+
+  objeto.NmPessoa := editP_Nome.Text;
+  objeto.nr_cpf_cnpj := MaskEdit1_CPF.Text;
+  objeto.NrCelular := EditP_Celular.Text;
+
+  if trim(MaskEdit1_CPF.Text)='' then
+  begin
+    raise Exception.Create('Preencha o CPF');
+  end;
+
+
+
+  if trim(EditCod_Pessoas.Text) = '' then
+  begin
+
+    if objeto.Inserir(vCodigo, vMensagem) = true then
+    begin
+      EditCod_Pessoas.Text := inttostr(vCodigo);
+
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO INSERIR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+  end
+  else
+  begin
+    objeto.CdPessoa := StrToInt(EditCod_Pessoas.Text);
+
+    if objeto.Alterar(vMensagem) = true then
+    begin
+      Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+      Application.MessageBox(Pchar('ERRO AO ALTERAR REGISTRO!!'+#10+
+                            'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+    end;
+
+  end;
+
+  objeto.Free;
+
+  QPesquisa_Pessoas.Close;
+
+end;
+
+
+procedure TFrmCadPessoas.ToolButton3Click(Sender: TObject);
+var
+  objeto : TPessoas;
+  vMensagem : string ;
+
+begin
+inherited;
+
+  if Trim(EditCod_Pessoas.Text) = '' then
+  begin
+    Application.MessageBox(Pchar('Localize uma cidade!') , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    exit;
+  end ;
+
+  if  Application.MessageBox('Deseja excluír?' , 'Aviso', MB_ICONQUESTION + MB_YESNO) = IDYES then
+  begin
+    objeto := TPessoas.create;
+
+    objeto.CdPessoa := StrToInt(EditCod_Pessoas.Text);
+
+    if objeto.Apagar(vMensagem) then
+    begin
+       ToolButton1.OnClick(self);
+       Application.MessageBox(Pchar(vMensagem) , 'Aviso', MB_ICONINFORMATION + MB_OK);
+    end
+    else
+    begin
+       Application.MessageBox(Pchar('ERRO AO APAGAR REGISTRO!!'+#10+
+                              'Motivo: '+vMensagem) , 'Aviso', MB_ICONERROR + MB_OK);
+
+    end;
+  end;
+
+   objeto.Free;
+
+   QPesquisa_Pessoas.Close;
+
+end;
+
+procedure TFrmCadPessoas.ToolButton4Click(Sender: TObject);
+begin
+  PageControl1.ActivePage := TabSheet2;
+end;
+
+end.

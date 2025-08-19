@@ -1,0 +1,111 @@
+inherited frmCadCidades: TfrmCadCidades
+  Caption = 'frmCadCidades'
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl1: TPageControl
+    inherited TabSheet1: TTabSheet
+      inherited Label1: TLabel
+        Left = 44
+        Top = 336
+        ExplicitLeft = 44
+        ExplicitTop = 336
+      end
+      inherited Label2: TLabel
+        Left = 125
+        Top = 336
+        ExplicitLeft = 125
+        ExplicitTop = 336
+      end
+      object Label3: TLabel [2]
+        Left = 26
+        Top = 63
+        Width = 33
+        Height = 13
+        Caption = 'C'#243'digo'
+      end
+      object Label4: TLabel [3]
+        Left = 26
+        Top = 115
+        Width = 27
+        Height = 13
+        Caption = 'Nome'
+      end
+      object Label5: TLabel [4]
+        Left = 388
+        Top = 115
+        Width = 13
+        Height = 13
+        Caption = 'UF'
+      end
+      inherited ToolBar1: TToolBar
+        inherited ToolButton1: TToolButton
+          OnClick = ToolButton1Click
+        end
+        inherited ToolButton2: TToolButton
+          OnClick = ToolButton2Click
+        end
+      end
+      inherited Button1: TButton
+        Left = 270
+        Top = 264
+        ExplicitLeft = 270
+        ExplicitTop = 264
+      end
+      inherited Button2: TButton
+        Left = 270
+        Top = 295
+        ExplicitLeft = 270
+        ExplicitTop = 295
+      end
+      inherited Button4: TButton
+        Left = 270
+        Top = 326
+        ExplicitLeft = 270
+        ExplicitTop = 326
+      end
+      inherited Button5: TButton
+        Left = 270
+        Top = 357
+        ExplicitLeft = 270
+        ExplicitTop = 357
+      end
+      inherited edtPesqCodigo: TEdit
+        Left = 47
+        Top = 359
+        ExplicitLeft = 47
+        ExplicitTop = 359
+      end
+      inherited edtPesqNome: TEdit
+        Left = 123
+        Top = 359
+        ExplicitLeft = 123
+        ExplicitTop = 359
+      end
+      object edtUF: TEdit
+        Left = 388
+        Top = 134
+        Width = 57
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 8
+      end
+      object edtNome: TEdit
+        Left = 26
+        Top = 134
+        Width = 345
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 9
+      end
+      object edtCodigo: TEdit
+        Left = 26
+        Top = 82
+        Width = 57
+        Height = 21
+        CharCase = ecUpperCase
+        Enabled = False
+        TabOrder = 10
+      end
+    end
+  end
+end

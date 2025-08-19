@@ -1,0 +1,119 @@
+unit UPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus,
+  System.ImageList, Vcl.ImgList;
+
+type
+  TfrmPrincipal = class(TForm)
+    MainMenu1: TMainMenu;
+    Cadastros1: TMenuItem;
+    Empresas1: TMenuItem;
+    Processos1: TMenuItem;
+    ImageList1: TImageList;
+    Cidades1: TMenuItem;
+    Lancamentos1: TMenuItem;
+    SubCategorias1: TMenuItem;
+    iposPagamentos1: TMenuItem;
+    Pessoas1: TMenuItem;
+    Caixas1: TMenuItem;
+    procedure Empresas1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Cidades1Click(Sender: TObject);
+    procedure Lancamentos1Click(Sender: TObject);
+    procedure SubCategorias1Click(Sender: TObject);
+    procedure iposPagamentos1Click(Sender: TObject);
+    procedure Pessoas1Click(Sender: TObject);
+    procedure Caixas1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+uses UPadrao, UCadEmpresas, ULogin, UCadCidades, UCadLancamento, USubCategorias,
+  UCadSubCategorias, UCadTipoPagamentos, CadPessoas, UCadCaixas;
+
+procedure TfrmPrincipal.Caixas1Click(Sender: TObject);
+begin
+    if (Application.FindComponent('frmCadCaixas') = nil) then
+  begin
+    Application.CreateForm(TfrmCadCaixas, frmCadCaixas);
+  end;
+  frmCadCaixas.Show;
+end;
+
+procedure TfrmPrincipal.Cidades1Click(Sender: TObject);
+begin
+    if (Application.FindComponent('frmCadCidades') = nil) then
+  begin
+    Application.CreateForm(TfrmCadCidades, frmCadCidades);
+  end;
+  frmCadCidades.Show;
+end;
+
+procedure TfrmPrincipal.Empresas1Click(Sender: TObject);
+
+begin
+  if (Application.FindComponent('frmCadEmpresas') = nil) then
+  begin
+    Application.CreateForm(TfrmCadEmpresas, frmCadEmpresas);
+  end;
+  frmCadEmpresas.Show;
+
+end;
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  Application.CreateForm(TfrmLogin, frmLogin);
+  frmLogin.ShowModal;
+
+end;
+
+procedure TfrmPrincipal.iposPagamentos1Click(Sender: TObject);
+begin
+  if (Application.FindComponent('frmTipoPagamentos') = nil) then
+  begin
+    Application.CreateForm(TfrmTipoPagamentos, frmTipoPagamentos);
+  end;
+  frmTipoPagamentos.Show;
+end;
+
+procedure TfrmPrincipal.Lancamentos1Click(Sender: TObject);
+begin
+   if (Application.FindComponent('frmCadLancamento') = nil) then
+  begin
+    Application.CreateForm(TfrmCadLancamento, frmCadLancamento);
+  end;
+  frmCadLancamento.Show;
+end;
+
+procedure TfrmPrincipal.Pessoas1Click(Sender: TObject);
+begin
+  if (Application.FindComponent('frmCadPessoas') = nil) then
+  begin
+    Application.CreateForm(TfrmCadPessoas, frmCadPessoas);
+  end;
+  frmCadPessoas.Show;
+end;
+
+procedure TfrmPrincipal.SubCategorias1Click(Sender: TObject);
+begin
+  if (Application.FindComponent('frmCadLancamento') = nil) then
+  begin
+    Application.CreateForm(TfrmCadSubCategorias, frmCadSubCategorias);
+  end;
+  frmCadSubCategorias.Show;
+end;
+
+end.

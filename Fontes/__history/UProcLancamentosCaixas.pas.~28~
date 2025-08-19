@@ -1,0 +1,369 @@
+unit UProcLancamentosCaixas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls,
+  Vcl.DBCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.ComCtrls, Vcl.Grids, Vcl.DBGrids, ppCtrls, ppPrnabl,
+  ppClass, ppDB, ppBands, ppCache, ppDesignLayer, ppParameter, ppDBPipe,
+  ppEndUsr, ppComm, ppRelatv, ppProd, ppReport, frxClass;
+
+type
+  TfrmProcLancamentosCaixas = class(TForm)
+    Label1: TLabel;
+    DbLookCaixas: TDBLookupComboBox;
+    edtValor: TEdit;
+    Label2: TLabel;
+    rdgTipo: TRadioGroup;
+    BitBtn1: TBitBtn;
+    lblAbertura: TLabel;
+    lblHora: TLabel;
+    QAberturas: TFDQuery;
+    DsAberturas: TDataSource;
+    QAberturasCD_ABERTURA_CAIXA: TIntegerField;
+    QAberturasCD_CAIXA: TIntegerField;
+    QAberturasDT_ABERTURA: TDateField;
+    QAberturasHR_ABERTURA: TStringField;
+    QAberturasNM_CAIXA: TStringField;
+    QCbSubCategoria: TFDQuery;
+    dsCbSubCategoria: TDataSource;
+    cbSubCategoria: TDBLookupComboBox;
+    Label7: TLabel;
+    memDescricao: TMemo;
+    Label3: TLabel;
+    rchLista: TRichEdit;
+    QLista: TFDQuery;
+    btnEstornar: TBitBtn;
+    panelGridLancamentos: TPanel;
+    Label4: TLabel;
+    btnFecharPanel: TButton;
+    dbGridLancamentos: TDBGrid;
+    btnBaixarLancamento: TButton;
+    QLancamentos: TFDQuery;
+    dsGridLancamentos: TDataSource;
+    lblLancamento: TLabel;
+    lblValor: TLabel;
+    frxReport1: TfrxReport;
+    ppReport1: TppReport;
+    ppDesigner1: TppDesigner;
+    ppDBPipeline1: TppDBPipeline;
+    dsLista: TDataSource;
+    ppParameterList1: TppParameterList;
+    ppDesignLayers1: TppDesignLayers;
+    ppDesignLayer1: TppDesignLayer;
+    ppHeaderBand1: TppHeaderBand;
+    ppDetailBand1: TppDetailBand;
+    ppFooterBand1: TppFooterBand;
+    ppLabel1: TppLabel;
+    ppDBText1: TppDBText;
+    ppDBText2: TppDBText;
+    ppDBText3: TppDBText;
+    ppLine1: TppLine;
+    ppLine2: TppLine;
+    ppDBText4: TppDBText;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure QAberturasAfterScroll(DataSet: TDataSet);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure DbLookCaixasClick(Sender: TObject);
+    procedure btnEstornarClick(Sender: TObject);
+    procedure cbSubCategoriaClick(Sender: TObject);
+    procedure btnBaixarLancamentoClick(Sender: TObject);
+    procedure btnFecharPanelClick(Sender: TObject);
+    procedure dbGridLancamentosDblClick(Sender: TObject);
+  private
+    procedure Listar;
+    procedure MostrarPanelGridLancamentos;
+    procedure EsconderPanel;
+    procedure LimparCampos;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProcLancamentosCaixas: TfrmProcLancamentosCaixas;
+
+implementation
+
+{$R *.dfm}
+
+uses UDM, ULancamentosCaixas, ULancamentos;
+
+
+function AlinhaEsquerda(Palavra : String; QuantidadeCaracteres : integer ):String;
+var
+   preeche : string;
+   i: integer;
+begin
+  preeche := '';
+  for I := Length(Palavra) to QuantidadeCaracteres-1 do
+  begin
+    preeche := preeche +  ' ';
+  end;
+  Result := Palavra + preeche;
+end;
+
+function AlinhaDireita(Palavra : String; QuantidadeCaracteres : integer ):String;
+var
+   preeche : string;
+   i: integer;
+begin
+  preeche := '';
+  for I := Length(Palavra) to QuantidadeCaracteres-1 do
+  begin
+    preeche := preeche +  ' ';
+  end;
+  Result := preeche + Palavra;
+end;
+
+procedure TfrmProcLancamentosCaixas.Listar;
+var
+  lanc : TLancamentosCaixas;
+begin
+  rchLista.Lines.Clear;
+
+  lanc := TLancamentosCaixas.create;
+
+
+  if lanc.ListaLancamentos(QAberturasCD_CAIXA.AsInteger, QAberturasCD_ABERTURA_CAIXA.AsInteger , QLista ) then
+  begin
+    QLista.First;
+    while not QLista.Eof do
+    begin
+
+
+      if QLista.fieldbyname('CD_LANCAMENTO_CAIXA_ESTORNO').AsString <> '0' then
+      begin
+        rchLista.SelAttributes.Color := clFuchsia;
+      end
+      else
+      begin
+        if QLista.fieldbyname('vl_lancamento').AsFloat >= 0 then
+          rchLista.SelAttributes.Color := clBlue
+        else
+          rchLista.SelAttributes.Color := clRed;
+      end;
+      rchLista.Lines.Add(AlinhaEsquerda( QLista.fieldbyname('cd_lancamento_caixa').asstring,6)+
+                         AlinhaEsquerda( QLista.fieldbyname('nm_subcategoria').asstring ,40)+
+                         AlinhaDireita(FloatToStrF(QLista.fieldbyname('vl_lancamento').AsFloat,ffCurrency ,100,2), 12) );
+
+      QLista.Next;
+    end;
+
+
+
+  end;
+
+  lanc.Free;
+end;
+
+procedure TfrmProcLancamentosCaixas.BitBtn1Click(Sender: TObject);
+var
+  lanc : TLancamentosCaixas;
+  codigo : integer;
+  Mensagem : String;
+begin
+  lanc := TLancamentosCaixas.create;
+
+  lanc.CdCaixa  := QAberturasCD_CAIXA.AsInteger;
+  lanc.CdCaixaOrigem := 0;
+
+  if rdgTipo.ItemIndex = 0 then
+     lanc.VlLancamento := StrToFloat(edtValor.Text) * -1
+  else
+    lanc.VlLancamento := StrToFloat(edtValor.Text) ;
+
+  lanc.CdAberturaCaixa := QAberturasCD_ABERTURA_CAIXA.AsInteger;
+
+  lanc.CdSubCategoria := cbSubCategoria.KeyValue;
+
+  lanc.DsLancamento:=memDescricao.Text;
+
+  lanc.CdLancamentoCaixaEstorno :=0;
+  lanc.FlEstornado := 'N';
+
+  lanc.Inserir(codigo, lblLancamento.Caption, Mensagem);
+
+  lanc.Free;
+
+
+
+
+
+
+  Listar;
+
+end;
+
+
+procedure TfrmProcLancamentosCaixas.LimparCampos;
+begin
+  cbSubCategoria.KeyValue := Null;
+  memDescricao.Clear;
+  rdgTipo.ItemIndex := 0;
+  edtValor.Clear;
+end;
+
+
+procedure TfrmProcLancamentosCaixas.btnBaixarLancamentoClick(Sender: TObject);
+var
+  lancCaixa : TLancamentosCaixas;
+  cdLancCaixa: Integer;
+  mensagem: string;
+  lanc: Lancamentos;
+begin
+  lancCaixa := TLancamentosCaixas.create;
+  lancCaixa.CdCaixa := QAberturasCD_CAIXA.Value;
+  lancCaixa.VlLancamento := QLancamentos.FieldByName('VL_LANCAMENTO').AsExtended;
+  lancCaixa.CdAberturaCaixa := QAberturasCD_ABERTURA_CAIXA.Value;
+  lancCaixa.CdSubcategoria :=  QLancamentos.FieldByName('CD_SUBCATEGORIA').AsInteger;
+  lancCaixa.DsLancamento := QLancamentos.FieldByName('DESCRICAO').AsString;
+  lancCaixa.InserirPorBaixaLancamento(cdLancCaixa, mensagem);
+
+  lanc := Lancamentos.Create;
+
+  if lanc.Baixar(cdLancCaixa, QLancamentos.FieldByName('CD_LANCAMENTO').AsInteger) then
+  begin
+    Application.MessageBox('Lançamento baixado com sucesso!', 'Sucesso!', MB_OK + MB_ICONINFORMATION);
+  end;
+
+  EsconderPanel;
+  LimparCampos;
+  Listar;
+
+end;
+
+procedure TfrmProcLancamentosCaixas.btnEstornarClick(Sender: TObject);
+var
+   codigo : string;
+   lanc : TLancamentosCaixas;
+begin
+
+  codigo := InputBox('Estorno', 'Digite o código do lançamento', '' );
+
+  if trim(codigo) = '' then
+    raise Exception.Create('Preencha o código do lancamento!');
+
+
+  lanc := TLancamentosCaixas.create();
+
+  if lanc.Estornar(QAberturasCD_CAIXA.AsInteger, QAberturasCD_ABERTURA_CAIXA.AsInteger, StrToInt(codigo)) then
+  begin
+    Listar;
+  end
+  else
+  begin
+    ShowMessage('Este lançamento não pertence a este caixa para esta abertura ou já foi estornado!');
+  end;
+
+  lanc.Free;
+
+
+end;
+
+procedure TfrmProcLancamentosCaixas.MostrarPanelGridLancamentos;
+begin
+  panelGridLancamentos.Top := cbSubCategoria.Top + cbSubCategoria.Height + 5;
+  panelGridLancamentos.Left := cbSubCategoria.Left + 50;
+end;
+
+procedure TfrmProcLancamentosCaixas.EsconderPanel;
+begin
+  panelGridLancamentos.Top := 900;
+  panelGridLancamentos.Left := 900;
+end;
+
+procedure TfrmProcLancamentosCaixas.btnFecharPanelClick(Sender: TObject);
+begin
+  EsconderPanel;
+  QLancamentos.Close;
+end;
+
+procedure TfrmProcLancamentosCaixas.cbSubCategoriaClick(Sender: TObject);
+  var
+  lanc: Lancamentos;
+begin
+  lanc := Lancamentos.Create;
+  if lanc.LocalizarPorSubcategoria(cbSubCategoria.KeyValue, QLancamentos) then
+  begin
+     MostrarPanelGridLancamentos;
+  end
+  else
+  begin
+    EsconderPanel;
+  end;
+
+  lanc.Free;
+end;
+
+procedure TfrmProcLancamentosCaixas.dbGridLancamentosDblClick(Sender: TObject);
+begin
+  lblLancamento.Caption := QLancamentos.FieldByName('CD_LANCAMENTO').AsString;
+  lblValor.Caption := FloatToStrF(QLancamentos.FieldByName('VL_LANCAMENTO').AsFloat,ffCurrency, 100,2);
+
+  memDescricao.Text := QLancamentos.FieldByName('DESCRICAO').AsString;
+
+  if QLancamentos.FieldByName('VL_LANCAMENTO').AsFloat  < 0  then
+  begin
+    rdgTipo.ItemIndex := 0;
+    edtValor.Text := FloatToStr( -1 * QLancamentos.FieldByName('VL_LANCAMENTO').AsFloat);
+  end
+  else
+  begin
+    rdgTipo.ItemIndex := 1;
+    edtValor.Text := QLancamentos.FieldByName('VL_LANCAMENTO').AsString;
+  end;
+
+
+  EsconderPanel;
+end;
+
+procedure TfrmProcLancamentosCaixas.DbLookCaixasClick(Sender: TObject);
+begin
+  Listar;
+end;
+
+procedure TfrmProcLancamentosCaixas.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfrmProcLancamentosCaixas.FormCreate(Sender: TObject);
+begin
+  QAberturas.Close;
+  QAberturas.ParamByName('CDUSUARIO').AsInteger := IdUsuarioLogado ;
+  QAberturas.Open();
+
+
+  QCbSubCategoria.Open();
+
+  if not  QAberturas.IsEmpty then
+  begin
+    QAberturas.First;
+    DbLookCaixas.KeyValue :=  QAberturasCD_ABERTURA_CAIXA.AsInteger;
+  end;
+
+
+   Listar;
+
+    EsconderPanel;
+
+    lblLancamento.Caption := '';
+    lblValor.Caption := '';
+
+
+end;
+
+procedure TfrmProcLancamentosCaixas.QAberturasAfterScroll(DataSet: TDataSet);
+begin
+  lblAbertura.Caption := QAberturasDT_ABERTURA.AsString;
+  lblHora.Caption := QAberturasHR_ABERTURA.AsString;
+end;
+
+end.

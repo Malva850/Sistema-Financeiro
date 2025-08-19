@@ -1,0 +1,165 @@
+inherited frmCadEmpresas: TfrmCadEmpresas
+  Caption = 'frmCadEmpresas'
+  ClientHeight = 211
+  Position = poMainFormCenter
+  OnCloseQuery = FormCloseQuery
+  OnShow = FormShow
+  ExplicitHeight = 250
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl1: TPageControl
+    Height = 211
+    ExplicitWidth = 638
+    ExplicitHeight = 211
+    inherited TabSheet1: TTabSheet
+      ExplicitLeft = 4
+      ExplicitTop = 24
+      ExplicitWidth = 630
+      ExplicitHeight = 183
+      inherited Label1: TLabel
+        Top = 68
+        Anchors = [akLeft, akTop, akRight]
+        ExplicitTop = 68
+      end
+      inherited Label2: TLabel
+        Top = 68
+        Anchors = [akLeft, akTop, akRight]
+        ExplicitTop = 68
+      end
+      object Label3: TLabel [2]
+        Left = 496
+        Top = 68
+        Width = 25
+        Height = 13
+        Anchors = [akLeft, akTop, akRight]
+        Caption = 'CNPJ'
+      end
+      inherited ToolBar1: TToolBar
+        ExplicitWidth = 630
+        inherited ToolButton3: TToolButton
+          OnClick = ToolButton3Click
+        end
+        inherited ToolButton4: TToolButton
+          OnClick = ToolButton4Click
+        end
+        inherited ToolButton6: TToolButton
+          OnClick = ToolButton6Click
+        end
+        inherited ToolButton7: TToolButton
+          OnClick = ToolButton7Click
+        end
+      end
+      inherited edtPesqCodigo: TEdit
+        Top = 87
+        Anchors = [akLeft, akTop, akRight]
+        ReadOnly = True
+        ExplicitTop = 87
+      end
+      inherited edtPesqNome: TEdit
+        Top = 87
+        Width = 411
+        Anchors = [akLeft, akTop, akRight]
+        CharCase = ecUpperCase
+        ExplicitTop = 87
+        ExplicitWidth = 411
+      end
+      object edtCNPJ: TMaskEdit
+        Left = 496
+        Top = 87
+        Width = 130
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        EditMask = '00.000.000/0000-00;0;_'
+        MaxLength = 18
+        TabOrder = 3
+        Text = ''
+      end
+    end
+    inherited TabSheet2: TTabSheet
+      OnShow = TabSheet2Show
+      ExplicitLeft = 4
+      ExplicitTop = 24
+      ExplicitWidth = 630
+      ExplicitHeight = 183
+      inherited DBGrid1: TDBGrid
+        Top = 3
+        Height = 177
+        Align = alClient
+        OnDblClick = DBGrid1DblClick
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'CD_EMPRESA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Cod. Empresa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_EMPRESA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Nome Empresa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Width = 400
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NR_CPF_CNPJ'
+            Title.Alignment = taCenter
+            Title.Caption = 'CPF/CNPJ'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Width = 100
+            Visible = True
+          end>
+      end
+    end
+  end
+  inherited QDados: TFDQuery
+    Active = True
+    SQL.Strings = (
+      'SELECT'
+      '    EMPRESAS.CD_EMPRESA,'
+      '    EMPRESAS.NM_EMPRESA,'
+      '    EMPRESAS.NR_CPF_CNPJ'
+      'FROM'
+      '    EMPRESAS')
+    Left = 572
+    Top = 160
+    object QDadosCD_EMPRESA: TIntegerField
+      FieldName = 'CD_EMPRESA'
+      Origin = 'CD_EMPRESA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QDadosNM_EMPRESA: TStringField
+      FieldName = 'NM_EMPRESA'
+      Origin = 'NM_EMPRESA'
+      Required = True
+      Size = 50
+    end
+    object QDadosNR_CPF_CNPJ: TStringField
+      FieldName = 'NR_CPF_CNPJ'
+      Origin = 'NR_CPF_CNPJ'
+      Required = True
+      Size = 14
+    end
+  end
+  inherited DsDados: TDataSource
+    Left = 532
+    Top = 160
+  end
+end

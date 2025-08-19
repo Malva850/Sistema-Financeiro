@@ -1,0 +1,178 @@
+inherited frmCadSubCategorias: TfrmCadSubCategorias
+  Caption = 'Cadastro de Sub Categorias'
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl1: TPageControl
+    inherited TabSheet1: TTabSheet
+      ExplicitTop = 24
+      object lblCodigo: TLabel [0]
+        Left = 18
+        Top = 61
+        Width = 37
+        Height = 13
+        Caption = 'C'#243'digo:'
+      end
+      object lblNome: TLabel [1]
+        Left = 18
+        Top = 123
+        Width = 31
+        Height = 13
+        Caption = 'Nome:'
+      end
+      object lblCategoria: TLabel [2]
+        Left = 18
+        Top = 187
+        Width = 51
+        Height = 13
+        Caption = 'Categoria:'
+      end
+      inherited ToolBar1: TToolBar
+        inherited ToolButton1: TToolButton
+          OnClick = ToolButton1Click
+        end
+        inherited ToolButton2: TToolButton
+          OnClick = ToolButton2Click
+        end
+        inherited ToolButton3: TToolButton
+          OnClick = ToolButton3Click
+        end
+      end
+      object edtCodigo: TEdit
+        Left = 18
+        Top = 80
+        Width = 121
+        Height = 21
+        Enabled = False
+        TabOrder = 1
+      end
+      object edtNome: TEdit
+        Left = 18
+        Top = 142
+        Width = 121
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 2
+      end
+      object DBLookupCBCategoria: TDBLookupComboBox
+        Left = 18
+        Top = 206
+        Width = 145
+        Height = 21
+        KeyField = 'CD_CATEGORIA'
+        ListField = 'NM_CATEGORIA'
+        ListSource = DsCatogoria
+        TabOrder = 3
+      end
+    end
+    inherited TabSheet2: TTabSheet
+      object lblPesquisa: TLabel [0]
+        Left = 26
+        Top = 15
+        Width = 102
+        Height = 13
+        Caption = 'Nome Sub Categoria:'
+      end
+      inherited DBGrid1: TDBGrid
+        Left = 78
+        Top = 67
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'CD_SUBCATEGORIA'
+            Title.Caption = 'C'#243'digo'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_SUBCATEGORIA'
+            Title.Caption = 'Nome'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_CATEGORIA'
+            Title.Caption = 'Categoria'
+            Visible = True
+          end>
+      end
+      inherited BitBtn1: TBitBtn
+        OnClick = BitBtn1Click
+      end
+      object edtPesquisa: TEdit
+        Left = 26
+        Top = 34
+        Width = 461
+        Height = 21
+        TabOrder = 3
+      end
+    end
+  end
+  inherited QPesquisa: TFDQuery
+    SQL.Strings = (
+      
+        'SELECT * FROM SUBCATEGORIAS AS SUBCAT INNER JOIN CATEGORIAS AS C' +
+        'AT ON'
+      'SUBCAT.CD_CATEGORIA = CAT.CD_CATEGORIA')
+    Left = 588
+    Top = 96
+    object QPesquisaCD_SUBCATEGORIA: TIntegerField
+      FieldName = 'CD_SUBCATEGORIA'
+      Origin = 'CD_SUBCATEGORIA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QPesquisaCD_CATEGORIA: TIntegerField
+      FieldName = 'CD_CATEGORIA'
+      Origin = 'CD_CATEGORIA'
+      Required = True
+    end
+    object QPesquisaNM_SUBCATEGORIA: TStringField
+      FieldName = 'NM_SUBCATEGORIA'
+      Origin = 'NM_SUBCATEGORIA'
+      Size = 60
+    end
+    object QPesquisaCD_CATEGORIA_1: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'CD_CATEGORIA_1'
+      Origin = 'CD_CATEGORIA'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object QPesquisaNM_CATEGORIA: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NM_CATEGORIA'
+      Origin = 'NM_CATEGORIA'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 50
+    end
+  end
+  inherited DsPesquisa: TDataSource
+    Left = 644
+    Top = 96
+  end
+  object QCBCategoria: TFDQuery
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'select * from categorias')
+    Left = 588
+    Top = 176
+    object QCBCategoriaCD_CATEGORIA: TIntegerField
+      FieldName = 'CD_CATEGORIA'
+      Origin = 'CD_CATEGORIA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object QCBCategoriaNM_CATEGORIA: TStringField
+      FieldName = 'NM_CATEGORIA'
+      Origin = 'NM_CATEGORIA'
+      Required = True
+      Size = 50
+    end
+  end
+  object DsCatogoria: TDataSource
+    DataSet = QCBCategoria
+    Left = 644
+    Top = 176
+  end
+end

@@ -1,0 +1,418 @@
+unit ULancamentosCaixas;
+
+interface
+
+uses
+  FireDAC.Comp.Client;
+
+type
+  TLancamentosCaixas = class
+  private
+    FCdLancamentoCaixa: Integer;
+    FCdCaixa: Integer;
+    FCdCaixaOrigem: Integer;
+    FDtLancamento: TDate;
+    FVlLancamento: Double;
+    FCdAberturaCaixa: Integer;
+    FHrLancamento: String;
+    FCdSubCategoria: Integer;
+    FDsLancamento: String;
+    FCdLancamentoCaixaEstorno: Integer;
+    FFlEstornado: String;
+
+    procedure SetCdLancamentoCaixa(const Value: Integer);
+    procedure SetCdCaixa(const Value: Integer);
+    procedure SetCdCaixaOrigem(const Value: Integer);
+    procedure SetDtLancamento(const Value: TDate);
+    procedure SetVlLancamento(const Value: Double);
+    procedure SetCdAbertura(const Value: Integer);
+    procedure SetHrLancamento(const Value: String);
+    procedure SetCdSubCategoria(const Value: Integer);
+    procedure SetDsLancamento(const Value: String);
+    procedure SetCdLancamentoCaixaEstorno(const Value: Integer);
+    procedure SetFlEstornado(const Value: String);
+
+
+
+  protected
+
+  public
+    constructor create;
+    function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+    function Alterar(var PMensagem:String): Boolean;
+    function Apagar(var PMensagem:String): Boolean;
+    function Localizar(PCodigo, PCdLancamentoCaixa : Integer; var Query : TFDQuery): boolean;
+    function ListaLancamentos(pcd_caixa, pcd_abertura_caixa: integer;  var Query: TFDQuery): boolean;
+    function Estornar(pcd_caixa, pcd_abertura_caixa,  pcd_lancamento: integer): boolean;
+
+
+
+
+
+  published
+    property CdLancamentoCaixa : Integer  read FCdLancamentoCaixa write SetCdLancamentoCaixa;
+    property CdCaixa : Integer  read FCdCaixa write SetCdCaixa;
+    property CdCaixaOrigem :  Integer read FCdCaixaOrigem write SetCdCaixaOrigem;
+    property DtLancamento : TDate read FDtLancamento write SetDtLancamento;
+    property VlLancamento : Double read FVlLancamento write SetVlLancamento;
+    property CdAberturaCaixa : Integer read FCdAberturaCaixa write SetCdAbertura;
+    property HrLancamento : String read FHrLancamento write SetHrLancamento;
+    property CdSubCategoria : Integer read FCdSubCategoria write SetCdSubCategoria;
+    property DsLancamento : String read FDsLancamento write SetDsLancamento;
+    property CdLancamentoCaixaEstorno: Integer read FCdLancamentoCaixaEstorno write SetCdLancamentoCaixaEstorno;
+    property FlEstornado :String read FFlEstornado write SetFlEstornado;
+   end;
+
+implementation
+
+{ TLancamentosCaixas }
+
+uses UDM, System.SysUtils;
+
+
+{ TLancamentosCaixas }
+
+constructor TLancamentosCaixas.create;
+begin
+  CdLancamentoCaixa := 0;
+  CdCaixa := 0 ;
+  CdCaixaOrigem := 0;
+  //DtLancamento := ;
+  VlLancamento := 0;
+  CdAberturaCaixa := 0;
+  HrLancamento := '';
+end;
+
+
+procedure TLancamentosCaixas.SetCdLancamentoCaixa(const Value: Integer);
+begin
+  FCdLancamentoCaixa := Value;
+end;
+
+
+
+
+procedure TLancamentosCaixas.SetCdLancamentoCaixaEstorno(const Value: Integer);
+begin
+  FCdLancamentoCaixaEstorno := Value;
+end;
+
+procedure TLancamentosCaixas.SetCdSubCategoria(const Value: Integer);
+begin
+  FCdSubCategoria := Value;
+end;
+
+procedure TLancamentosCaixas.SetCdCaixa(const Value: Integer);
+begin
+  FCdCaixa := Value;
+end;
+
+
+procedure TLancamentosCaixas.SetCdCaixaOrigem(const Value: Integer);
+begin
+  FCdCaixaOrigem := Value;
+end;
+
+
+procedure TLancamentosCaixas.SetDsLancamento(const Value: String);
+begin
+  FDsLancamento := Value;
+end;
+
+procedure TLancamentosCaixas.SetDtLancamento(const Value: TDate);
+begin
+  FDtLancamento := Value;
+end;
+
+
+procedure TLancamentosCaixas.SetFlEstornado(const Value: String);
+begin
+  FFlEstornado := Value;
+end;
+
+procedure TLancamentosCaixas.SetVlLancamento(const Value: Double);
+begin
+  FVlLancamento := Value;
+end;
+
+
+procedure TLancamentosCaixas.SetCdAbertura(const Value: Integer);
+begin
+  FCdAberturaCaixa := Value;
+end;
+
+
+procedure TLancamentosCaixas.SetHrLancamento(const Value: String);
+begin
+  FHrLancamento := Value;
+end;
+
+
+function TLancamentosCaixas.Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCdLancamentoCaixa := DM.GeraSequencial('GEN_LANCAMENTOS_CAIXAS') ;
+    PCodigo := FCdLancamentoCaixa;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO LANCAMENTOS_CAIXAS (CD_LANCAMENTO_CAIXA, CD_CAIXA, CD_CAIXA_ORIGEM, DT_LANCAMENTO, VL_LANCAMENTO,'+
+                       ' CD_ABERTURA_CAIXA, HR_LANCAMENTO, CD_SUBCATEGORIA, DS_LANCAMENTO, CD_LANCAMENTO_CAIXA_ESTORNO, FL_ESTORNO)'+
+                       ' VALUES (:PCD_LANCAMENTO_CAIXA, :PCD_CAIXA, :PCD_CAIXA_ORIGEM, CURRENT_DATE,  :PVL_LANCAMENTO,'+
+                       ' :PCD_ABERTURA_CAIXA,  substring(current_time from 1 for 5 ), :PCD_SUBCATEGORIA, :PDS_LANCAMENTO, :PCD_LANCAMENTO_CAIXA_ESTORNO, :PFL_ESTORNO )');
+    dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA').AsInteger := FCdCaixa;
+
+    if FCdCaixaOrigem = 0 then
+      dm.QInsere.ParamByName('PCD_CAIXA_ORIGEM').Clear()
+    else
+      dm.QInsere.ParamByName('PCD_CAIXA_ORIGEM').AsInteger := FCdCaixaOrigem;
+
+
+    //dm.QInsere.ParamByName('PDT_LANCAMENTO').AsDate := FDtLancamento;
+    dm.QInsere.ParamByName('PVL_LANCAMENTO').AsFloat := FVlLancamento;
+    dm.QInsere.ParamByName('PCD_ABERTURA_CAIXA').AsInteger := FCdAberturaCaixa;
+   // dm.QInsere.ParamByName('PHR_LANCAMENTO').AsString :=  FHrLancamento;
+    dm.QInsere.ParamByName('PCD_SUBCATEGORIA').AsInteger := FCdSubCategoria;
+     dm.QInsere.ParamByName('PDS_LANCAMENTO').AsString := FDsLancamento;
+
+
+    if CdLancamentoCaixa = 0 then
+      dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA_ESTORNO').Clear()
+    else
+      dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA_ESTORNO').AsInteger := CdLancamentoCaixaEstorno;
+
+    dm.QInsere.ParamByName('PFL_ESTORNO').AsString :=  FlEstornado;
+
+    dm.QInsere.ExecSQL;
+
+
+    if FlEstornado  = 'S' then
+    begin
+      dm.QUpdate.Close;
+      dm.QUpdate.SQL.Clear;
+      dm.QUpdate.SQL.Add(' UPDATE LANCAMENTOS_CAIXAS SET FL_ESTORNO=''S'' WHERE CD_LANCAMENTO_CAIXA=:PCD_LANCAMENTO_CAIXA');
+      dm.QUpdate.ParamByName('PCD_LANCAMENTO_CAIXA').AsInteger := CdLancamentoCaixaEstorno;
+      dm.QUpdate.ExecSQL;
+    end;
+
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+
+function TLancamentosCaixas.Alterar(var PMensagem:String): Boolean;
+begin
+  try
+  {
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO LANCAMENTOS_CAIXAS (CD_LANCAMENTO_CAIXA, CD_CAIXA, CD_CAIXA_ORIGEM, DT_LANCAMENTO, VL_LANCAMENTO, CD_ABERTURA_CAIXA, HR_LANCAMENTO)'+
+                       ' VALUES (:PCD_LANCAMENTO_CAIXA, :PCD_CAIXA, PCD_CAIXA_ORIGEM, PDT_LANCAMENTO, PVL_LANCAMENTO, PCD_ABERTURA_CAIXA, PHR_LANCAMENTO)');
+    dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA').AsInteger := FCdCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA_ORIGEM').AsInteger := FCdCaixaOrigem;
+    dm.QInsere.ParamByName('PDT_LANCAMENTO').AsDate := FDtLancamento;
+    dm.QInsere.ParamByName('PVL_LANCAMENTO').AsFloat := FVlLancamento;
+    dm.QInsere.ParamByName('PCD_ABERTURA_CAIXA').AsInteger := FCdAberturaCaixa;
+    dm.QInsere.ParamByName('PHR_LANCAMENTO').AsString :=  FHrLancamento;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+  }
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+
+function TLancamentosCaixas.Apagar(var PMensagem:String): Boolean;
+begin
+  try
+  {
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO LANCAMENTOS_CAIXAS (CD_LANCAMENTO_CAIXA, CD_CAIXA, CD_CAIXA_ORIGEM, DT_LANCAMENTO, VL_LANCAMENTO, CD_ABERTURA_CAIXA, HR_LANCAMENTO)'+
+                       ' VALUES (:PCD_LANCAMENTO_CAIXA, :PCD_CAIXA, PCD_CAIXA_ORIGEM, PDT_LANCAMENTO, PVL_LANCAMENTO, PCD_ABERTURA_CAIXA, PHR_LANCAMENTO)');
+    dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA').AsInteger := FCdCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA_ORIGEM').AsInteger := FCdCaixaOrigem;
+    dm.QInsere.ParamByName('PDT_LANCAMENTO').AsDate := FDtLancamento;
+    dm.QInsere.ParamByName('PVL_LANCAMENTO').AsFloat := FVlLancamento;
+    dm.QInsere.ParamByName('PCD_ABERTURA_CAIXA').AsInteger := FCdAberturaCaixa;
+    dm.QInsere.ParamByName('PHR_LANCAMENTO').AsString :=  FHrLancamento;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+ }
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+
+function TLancamentosCaixas.Localizar(PCodigo, PCdLancamentoCaixa : Integer; var Query : TFDQuery): boolean;
+begin
+ { Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from lancamentos_caixas WHERE 1=1');
+
+  if PCodigo<>0 then
+  begin
+    dm.QInsere.SQL.Add(' INSERT INTO LANCAMENTOS_CAIXAS (CD_LANCAMENTO_CAIXA, CD_CAIXA, CD_CAIXA_ORIGEM, DT_LANCAMENTO, VL_LANCAMENTO, CD_ABERTURA_CAIXA, HR_LANCAMENTO)'+
+                       ' VALUES (:PCD_LANCAMENTO_CAIXA, :PCD_CAIXA, PCD_CAIXA_ORIGEM, PDT_LANCAMENTO, PVL_LANCAMENTO, PCD_ABERTURA_CAIXA, PHR_LANCAMENTO)');
+    dm.QInsere.ParamByName('PCD_LANCAMENTO_CAIXA').AsInteger := FCdLancamentoCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA').AsInteger := FCdCaixa;
+    dm.QInsere.ParamByName('PCD_CAIXA_ORIGEM').AsInteger := FCdCaixaOrigem;
+    dm.QInsere.ParamByName('PDT_LANCAMENTO').AsDate := FDtLancamento;
+    dm.QInsere.ParamByName('PVL_LANCAMENTO').AsFloat := FVlLancamento;
+    dm.QInsere.ParamByName('PCD_ABERTURA_CAIXA').AsInteger := FCdAberturaCaixa;
+    dm.QInsere.ParamByName('PHR_LANCAMENTO').AsString :=  FHrLancamento;
+  end;
+
+  if PCdLancamentoCaixa<>0 then
+  begin
+    Query.SQL.Add(' AND CD_LANCAMENTO_CAIXA LIKE :PCDLANCAMENTO_CAIXA');
+    Query.ParamByName('PCDLANCAMENTO_CAIXA').AsInteger := PCdLancamentoCaixa;
+  end;
+
+  Query.Open();
+
+  }
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+end;
+
+
+function TLancamentosCaixas.ListaLancamentos(pcd_caixa, pcd_abertura_caixa : integer;  var Query: TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select  LC.cd_lancamento_caixa, lc.vl_lancamento '+
+                ' from lancamentos_caixas lc '+
+                ' where lc.cd_abertura_caixa = :pcd_abertura_caixa '+
+                ' and lc.cd_caixa= :pcd_caixa'+
+                ' order by LC.cd_lancamento_caixa');
+  Query.ParamByName('pcd_caixa').AsInteger := pcd_caixa ;
+  Query.ParamByName('pcd_abertura_caixa').AsInteger := pcd_abertura_caixa ;
+  Query.Open();
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+end;
+
+function TLancamentosCaixas.Estornar(pcd_caixa, pcd_abertura_caixa , pcd_lancamento: integer): boolean;
+var
+   codigo : integer;
+   mensagem : string;
+begin
+  dm.QVaziaDM.Close;
+  dm.QVaziaDM.SQL.Clear;
+  dm.QVaziaDM.SQL.Add(' select  * '+
+                ' from lancamentos_caixas lc '+
+                ' where lc.cd_abertura_caixa = :pcd_abertura_caixa '+
+                ' and lc.cd_caixa= :pcd_caixa'+
+                ' and LC.cd_lancamento_caixa=:pcd_lancamento_caixa');
+  dm.QVaziaDM.ParamByName('pcd_caixa').AsInteger := pcd_caixa ;
+  dm.QVaziaDM.ParamByName('pcd_abertura_caixa').AsInteger := pcd_abertura_caixa ;
+  dm.QVaziaDM.ParamByName('pcd_lancamento_caixa').AsInteger := pcd_lancamento ;
+  dm.QVaziaDM.Open();
+  if dm.QVaziaDM.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+
+    if dm.QVaziaDM.FieldByName('FL_ESTORNO').AsString = 'S' then
+    begin
+      Result := false;
+      EXIT;
+    end;
+
+
+
+    Result := true;
+
+    dm.QVaziaDM.First;
+
+    CdCaixa             := dm.QVaziaDM.FieldByName('CD_CAIXA').AsInteger;
+    CdCaixaOrigem       := 0;
+
+
+   // if dm.QVaziaDM.FieldByName('VL_LANCAMENTO').AsFloat > 0 then
+       VlLancamento := dm.QVaziaDM.FieldByName('VL_LANCAMENTO').AsFloat * -1  ;
+  //  else
+    //  VlLancamento  := dm.QVaziaDM.FieldByName('VL_LANCAMENTO').AsFloat ;
+
+    CdAberturaCaixa := dm.QVaziaDM.FieldByName('CD_ABERTURA_CAIXA').AsInteger;
+
+    CdSubCategoria  := dm.QVaziaDM.FieldByName('CD_SUBCATEGORIA').AsInteger;
+
+    DsLancamento:=  'ESTORNO DO LANCAMENTO '+IntToStr(pcd_lancamento);
+
+    CdLancamentoCaixaEstorno := pcd_lancamento;
+    FlEstornado := 'S';
+
+    Inserir(codigo, Mensagem);
+
+
+
+
+
+  end;
+
+end;
+
+
+
+
+end.

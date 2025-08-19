@@ -1,0 +1,228 @@
+unit UUsuario;
+
+interface
+
+uses FireDAC.Comp.Client;
+
+type
+
+TUsuario = class
+
+private
+    FNMUsuario: string;
+    FCDUsuario: Integer;
+    FSenha: string;
+    FLogin: string;
+    procedure SetCDUsuario(const Value: Integer);
+    procedure SetLogin(const Value: string);
+    procedure SetNMUsuario(const Value: string);
+    procedure SetSenha(const Value: string);
+
+
+protected
+
+
+public
+   constructor create;
+    function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+    function Alterar(var PMensagem:String): Boolean;
+    function Apagar(var PMensagem:String): Boolean;
+    function Localizar(PCodigo, PNome : String; var Query : TFDQuery): boolean;
+    function RetornaCodigoUsuario(Login: String): integer;
+
+
+published
+property CDUsuario : Integer read FCDUsuario write SetCDUsuario;
+property Login : string read FLogin write SetLogin;
+property NMUsuario : string read FNMUsuario write SetNMUsuario;
+property Senha : string read FSenha write SetSenha;
+
+
+
+
+end;
+
+implementation
+
+{ TUsuario }
+
+uses UDM, System.SysUtils;
+
+
+
+
+
+constructor TUsuario.create;
+begin
+  CDUsuario := 0;
+  Login := '' ;
+  NMUsuario := '' ;
+  Senha :='';
+end;
+
+
+function TUsuario.Inserir(var PCodigo: Integer; var PMensagem: String): Boolean;
+begin
+try
+
+    dm.DBFinanceiro.StartTransaction;
+    CDUsuario := DM.GeraSequencial('GEN_USUARIO') ;
+    PCodigo := CDUsuario;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO USUARIOS (CD_USUARIO, LOGIN, NM_USUARIO, SENHA)'+
+                       ' VALUES (:PCD_USUARIO, :PLOGIN,:PNM_USUARIO,:PSENHA)');
+    dm.QInsere.ParamByName('PCD_USUARIO').AsInteger := CDUsuario ;
+    dm.QInsere.ParamByName('PLOGIN').AsString  := Login;
+    dm.QInsere.ParamByName('NM_USUARIO').AsString  := NMUsuario;
+    dm.QInsere.ParamByName('PSENHA').AsString  := Senha;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+
+
+function TUsuario.Alterar(var PMensagem: String): Boolean;
+begin
+ try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE CATEGORIAS SET CD_USUARIO=:PCD_USUARIO WHERE LOGIN=:PLOGIN WHERE NM_USUARIO:=:PNM_USUARIO WHERE SENHA:=:PSENHA ');
+    dm.QUpdate.ParamByName('PCD_USUARIO').AsInteger  := CDusuario;
+    dm.QUpdate.ParamByName('PLOGIN').AsString := Login ;
+    dm.QUpdate.ParamByName('PNM_USUARIO').AsString := NMUsuario ;
+    dm.QUpdate.ParamByName('PSENHA').AsString := Senha ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TUsuario.Apagar(var PMensagem: String): Boolean;
+begin
+try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM USUARIOS  WHERE CD_USUARIO=:PCD_USUARIO');
+    dm.QUpdate.ParamByName('PCD_USUARIO').AsInteger := FCDUsuario ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+
+function TUsuario.Localizar(PCodigo, PNome: String; var Query: TFDQuery): boolean;
+begin
+Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from USUARIOS WHERE 1=1');
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CD_USUARIO=:PCD_USUARIO') ;
+    Query.ParamByName('PCD_USUARIO').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND LOGIN LIKE :PLOGIN');
+    Query.ParamByName('PLOGIN').AsString := '%'+PNome+'%';
+  end;
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+end;
+
+
+function TUsuario.RetornaCodigoUsuario(Login: String): integer;
+begin
+  dm.QVaziaDM.Close;
+  dm.QVaziaDM.SQL.Clear;
+  dm.QVaziaDM.SQL.Add(' select cd_usuario from USUARIOS WHERE login=:plogin');
+  dm.QVaziaDM.ParamByName('plogin').AsString := Login ;
+  dm.QVaziaDM.Open();
+  if not dm.QVaziaDM.IsEmpty then
+  begin
+    Result := dm.QVaziaDM.FieldByName('cd_usuario').AsInteger;
+  end
+  else
+  begin
+    Result := 0;
+  end;
+  dm.QVaziaDM.Close;
+end;
+
+procedure TUsuario.SetCDUsuario(const Value: Integer);
+begin
+  FCDUsuario := Value;
+end;
+
+procedure TUsuario.SetLogin(const Value: string);
+begin
+  FLogin := Value;
+end;
+
+procedure TUsuario.SetNMUsuario(const Value: string);
+begin
+  FNMUsuario := Value;
+end;
+
+procedure TUsuario.SetSenha(const Value: string);
+begin
+  FSenha := Value;
+end;
+
+end.

@@ -1,0 +1,187 @@
+unit UCidades;
+
+interface
+
+uses
+  FireDAC.Comp.Client;
+
+
+type
+  TCategorias = class
+  private
+    FCdCategoria: Integer;
+    FNmCategoria: String;
+    procedure SetCdCategoria(const Value: Integer);
+    procedure SetNmCategoria(const Value: String);
+
+
+
+  protected
+
+  public
+    constructor create;
+    function Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+    function Alterar(var PMensagem:String): Boolean;
+    function Apagar(var PMensagem:String): Boolean;
+    function Localizar(PCodigo, PNome : String; var Query : TFDQuery): boolean;
+
+
+  published
+    property CdCategoria : Integer  read FCdCategoria write SetCdCategoria;
+    property NmCategoria : String  read FNmCategoria write SetNmCategoria;
+
+  end;
+
+
+implementation
+
+{ TCategorias }
+
+uses UDM, System.SysUtils;
+
+
+
+{ TCategorias }
+
+constructor TCategorias.create;
+begin
+  CdCategoria := 0;
+  NmCategoria := '' ;
+end;
+
+
+
+procedure TCategorias.SetCdCategoria(const Value: Integer);
+begin
+  FCdCategoria := Value;
+end;
+
+procedure TCategorias.SetNmCategoria(const Value: String);
+begin
+  FNmCategoria := Value;
+end;
+
+function TCategorias.Inserir(var PCodigo : Integer; var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    FCdCategoria := DM.GeraSequencial('GEN_CATEGORIAS') ;
+    PCodigo := FCdCategoria;
+
+    dm.QInsere.Close;
+    dm.QInsere.SQL.Clear;
+    dm.QInsere.SQL.Add(' INSERT INTO CATEGORIAS (CD_CATEGORIA, NM_CATEGORIA)'+
+                       ' VALUES (:PCD_CATEGORIA, :PNM_CATEGORIA)');
+    dm.QInsere.ParamByName('PCD_CATEGORIA').AsInteger := FCdCategoria ;
+    dm.QInsere.ParamByName('PNM_CATEGORIA').AsString  := FNmCategoria;
+    dm.QInsere.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCategorias.Alterar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' UPDATE CATEGORIAS SET NM_CATEGORIA=:PNM_CATEGORIA WHERE CD_CATEGORIA=:PCD_CATEGORIA');
+    dm.QUpdate.ParamByName('PNM_CATEGORIA').AsString  := FNmCategoria;
+    dm.QUpdate.ParamByName('PCD_CATEGORIA').AsInteger := FCdCategoria ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCategorias.Apagar(var PMensagem:String): Boolean;
+begin
+  try
+
+    dm.DBFinanceiro.StartTransaction;
+    dm.QUpdate.Close;
+    dm.QUpdate.SQL.Clear;
+    dm.QUpdate.SQL.Add(' DELETE FROM CATEGORIAS  WHERE CD_CATEGORIA=:PCD_CATEGORIA');
+    dm.QUpdate.ParamByName('PCD_CATEGORIA').AsInteger := FCdCategoria ;
+    dm.QUpdate.ExecSQL;
+
+    dm.DBFinanceiro.Commit;
+    dm.DBFinanceiro.CommitRetaining;
+
+    Result := true;
+
+  except
+    on E: Exception do
+    begin
+      dm.DBFinanceiro.Rollback;
+      PMensagem := e.Message;
+      Result := false;
+    end;
+  end;
+
+end;
+
+function TCategorias.Localizar(PCodigo, PNome : String; var Query : TFDQuery): boolean;
+begin
+  Query.Close;
+  Query.SQL.Clear;
+  Query.SQL.Add(' select * from categorias WHERE 1=1');
+
+  if trim(PCodigo)<>'' then
+  begin
+    Query.SQL.Add(' AND CD_CATEGORIA=:PCD_CATEGORIA') ;
+    Query.ParamByName('PCD_CATEGORIA').AsString := PCodigo ;
+  end;
+
+  if trim(PNome)<>'' then
+  begin
+    Query.SQL.Add(' AND NM_CATEGORIA LIKE :PNOME');
+    Query.ParamByName('PNOME').AsString := '%'+PNome+'%';
+  end;
+
+  Query.Open();
+
+  if Query.IsEmpty then
+  begin
+    Result := false;
+  end
+  else
+  begin
+    Result := true;
+  end;
+
+
+
+end;
+
+
+
+
+end.

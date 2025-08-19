@@ -1,0 +1,108 @@
+inherited frmCadCaixas: TfrmCadCaixas
+  Caption = 'frmCadCaixas'
+  ClientHeight = 242
+  OnCloseQuery = FormCloseQuery
+  ExplicitHeight = 281
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl1: TPageControl
+    Height = 242
+    ExplicitHeight = 242
+    inherited TabSheet1: TTabSheet
+      ExplicitLeft = 0
+      ExplicitWidth = 630
+      ExplicitHeight = 349
+      object Label3: TLabel [0]
+        Left = 482
+        Top = 60
+        Width = 36
+        Height = 13
+        Caption = 'Usu'#225'rio'
+      end
+      inherited ToolBar1: TToolBar
+        ExplicitWidth = 630
+        inherited ToolButton3: TToolButton
+          OnClick = ToolButton3Click
+        end
+      end
+      object DBLookupComboBox1: TDBLookupComboBox
+        Left = 482
+        Top = 79
+        Width = 145
+        Height = 21
+        KeyField = 'CD_USUARIO'
+        ListField = 'NM_USUARIO'
+        ListSource = DsUsuariosAux
+        TabOrder = 1
+      end
+    end
+    inherited TabSheet2: TTabSheet
+      OnShow = TabSheet2Show
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 630
+      ExplicitHeight = 349
+      inherited DBGrid1: TDBGrid
+        Top = 3
+        Height = 208
+        Align = alClient
+        OnDblClick = DBGrid1DblClick
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'CD_CAIXA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Cod. Caixa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_CAIXA'
+            Title.Alignment = taCenter
+            Title.Caption = 'Nome Caixa'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Width = 210
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NM_USUARIO'
+            Title.Alignment = taCenter
+            Title.Caption = 'Usu'#225'rio'
+            Title.Font.Charset = DEFAULT_CHARSET
+            Title.Font.Color = clWindowText
+            Title.Font.Height = -11
+            Title.Font.Name = 'Tahoma'
+            Title.Font.Style = [fsBold]
+            Visible = True
+          end>
+      end
+    end
+  end
+  object QUsuariosAux: TFDQuery
+    Active = True
+    Connection = DM.DBFinanceiro
+    SQL.Strings = (
+      'SELECT'
+      '    USUARIOS.CD_USUARIO,'
+      '    USUARIOS.NM_USUARIO'
+      'FROM'
+      '    USUARIOS')
+    Left = 508
+    Top = 136
+  end
+  object DsUsuariosAux: TDataSource
+    DataSet = QUsuariosAux
+    Left = 580
+    Top = 136
+  end
+end

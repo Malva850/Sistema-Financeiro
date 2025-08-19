@@ -1,0 +1,56 @@
+unit UProcAberturasCaixas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmProcAberturasCaixas = class(TForm)
+    BitBtn1: TBitBtn;
+    DbLookCaixas: TDBLookupComboBox;
+    Label1: TLabel;
+    DBGrid1: TDBGrid;
+    QCaixas: TFDQuery;
+    dsCaixas: TDataSource;
+    QCaixasCD_CAIXA: TIntegerField;
+    QCaixasNM_CAIXA: TStringField;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProcAberturasCaixas: TfrmProcAberturasCaixas;
+
+implementation
+
+{$R *.dfm}
+
+uses UCaixas, UDM;
+
+procedure TfrmProcAberturasCaixas.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfrmProcAberturasCaixas.FormCreate(Sender: TObject);
+var
+  caixa : TCaixas;
+begin
+  caixa := TCaixas.create;
+  caixa.RetornaCaixasUsuarios(IdUsuarioLogado, QCaixas);
+  caixa.Free;
+
+end;
+
+end.
